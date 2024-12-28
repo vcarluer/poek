@@ -62,6 +62,14 @@ const palData = [
     { 
         name: 'jetragon',
         prompt: 'A dragon-like creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A blue Jetragon with energy patterns on its wings. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+    },
+    {
+        name: 'mau',
+        prompt: 'A cat-like creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A sleek black Mau with golden Egyptian-style markings. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+    },
+    {
+        name: 'verdash',
+        prompt: 'A humanoid plant creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A green Verdash with leaf-like clothing and elegant plant features. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
     }
 ];
 

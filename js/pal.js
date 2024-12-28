@@ -124,4 +124,4 @@ class Pal {
 }
 
 // Export for use in game.js
-window.Pokemon = Pal;
+window.Pal = Pal;
