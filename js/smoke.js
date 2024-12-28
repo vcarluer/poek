@@ -50,5 +50,4 @@ class Smoke {
     }
 }
 
-// Export for use in game.js
-window.Smoke = Smoke;
+export { Smoke };

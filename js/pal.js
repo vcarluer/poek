@@ -1,3 +1,5 @@
+const { Bodies, World } = window.Matter;
+
 class Pal {
     static TYPES = {
         LAMBALL: { radius: 10, score: 2, next: 'CHIKIPI', image: 'assets/lamball.png', color: '#F8E8E8' },
@@ -91,7 +93,7 @@ class Pal {
         const { radius } = Pal.TYPES[type];
         
         // Create the Matter.js body
-        this.body = Matter.Bodies.circle(x, y, radius, {
+        this.body = Bodies.circle(x, y, radius, {
             restitution: 0.3,
             friction: 0.2,
             density: 0.002,
@@ -99,7 +101,7 @@ class Pal {
         });
 
         // Add the body to the world
-        Matter.World.add(world, this.body);
+        World.add(world, this.body);
 
         this.image = images[type];
     }
@@ -162,9 +164,8 @@ class Pal {
     }
 
     remove(world) {
-        Matter.World.remove(world, this.body);
+        World.remove(world, this.body);
     }
 }
 
-// Export for use in game.js
-window.Pal = Pal;
+export { Pal };

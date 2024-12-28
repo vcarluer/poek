@@ -1,9 +1,14 @@
+// Import Matter.js from the global scope since it's loaded via CDN
+const { Engine, World, Bodies, Events } = window.Matter;
+
 import { GameRenderer } from './modules/GameRenderer.js';
 import { PhysicsEngine } from './modules/PhysicsEngine.js';
 import { InputHandler } from './modules/InputHandler.js';
 import { GameState } from './modules/GameState.js';
 import { UIManager } from './modules/UIManager.js';
 import { CollisionManager } from './modules/CollisionManager.js';
+import { Pal } from './pal.js';
+import { Smoke } from './smoke.js';
 
 class Game {
     constructor() {

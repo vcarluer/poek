@@ -1,3 +1,6 @@
+import { Pal } from '../pal.js';
+import { Smoke } from '../smoke.js';
+
 export class CollisionManager {
     constructor(gameState, physicsEngine, uiManager) {
         this.gameState = gameState;

@@ -1,3 +1,5 @@
+const { Engine, World, Bodies, Body, Events } = window.Matter;
+
 export class PhysicsEngine {
     constructor(canvasWidth, canvasHeight, selectionZoneHeight) {
         this.canvasWidth = canvasWidth;
@@ -8,7 +10,7 @@ export class PhysicsEngine {
 
     initializeEngine() {
         // Initialize Matter.js engine
-        this.engine = Matter.Engine.create();
+        this.engine = Engine.create();
         this.world = this.engine.world;
         
         // Use mobile gravity for consistent physics
@@ -29,7 +31,7 @@ export class PhysicsEngine {
 
         // Bottom wall
         this.walls = [
-            Matter.Bodies.rectangle(
+            Bodies.rectangle(
                 this.canvasWidth / 2,
                 this.canvasHeight,
                 this.canvasWidth,
@@ -37,7 +39,7 @@ export class PhysicsEngine {
                 wallOptions
             ),
             // Left wall (only in play zone)
-            Matter.Bodies.rectangle(
+            Bodies.rectangle(
                 0,
                 this.selectionZoneHeight + (this.canvasHeight - this.selectionZoneHeight) / 2,
                 20,
@@ -45,7 +47,7 @@ export class PhysicsEngine {
                 wallOptions
             ),
             // Right wall (only in play zone)
-            Matter.Bodies.rectangle(
+            Bodies.rectangle(
                 this.canvasWidth,
                 this.selectionZoneHeight + (this.canvasHeight - this.selectionZoneHeight) / 2,
                 20,
@@ -54,33 +56,33 @@ export class PhysicsEngine {
             )
         ];
 
-        Matter.World.add(this.world, this.walls);
+        World.add(this.world, this.walls);
     }
 
     update() {
-        Matter.Engine.update(this.engine);
+        Engine.update(this.engine);
     }
 
     reset() {
-        Matter.World.clear(this.world);
-        Matter.Engine.clear(this.engine);
+        World.clear(this.world);
+        Engine.clear(this.engine);
         this.initializeEngine();
     }
 
     addBody(body) {
-        Matter.World.add(this.world, body);
+        World.add(this.world, body);
     }
 
     removeBody(body) {
-        Matter.World.remove(this.world, body);
+        World.remove(this.world, body);
     }
 
     setStatic(body, isStatic) {
-        Matter.Body.setStatic(body, isStatic);
+        Body.setStatic(body, isStatic);
     }
 
     setPosition(body, position) {
-        Matter.Body.setPosition(body, position);
+        Body.setPosition(body, position);
     }
 
     getWalls() {
@@ -88,6 +90,6 @@ export class PhysicsEngine {
     }
 
     onCollision(callback) {
-        Matter.Events.on(this.engine, 'collisionStart', callback);
+        Events.on(this.engine, 'collisionStart', callback);
     }
 }

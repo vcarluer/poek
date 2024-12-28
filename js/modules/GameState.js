@@ -1,3 +1,5 @@
+import { Pal } from '../pal.js';
+
 export class GameState {
     constructor() {
         this.reset();
