@@ -84,6 +84,14 @@ export class CollisionManager {
                     Pal.TYPES
                 );
 
+                // Check for rapid merges
+                if (!this.gameState.isJetragonSpinningActive() && this.gameState.trackMerge()) {
+                    this.gameState.setJetragonSpinning(true);
+                    this.uiManager.spinJetragon(() => {
+                        this.gameState.setJetragonSpinning(false);
+                    });
+                }
+
                 // Check for game over after fusion
                 requestAnimationFrame(() => {
                     if (this.gameState.checkGameOver(this.gameState.selectionZoneHeight)) {

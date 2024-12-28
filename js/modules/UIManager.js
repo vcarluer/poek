@@ -3,6 +3,7 @@ export class UIManager {
         this.scoreElement = document.getElementById('score');
         this.nextPalElement = document.getElementById('next-pal');
         this.gameOverScreen = document.querySelector('.game-over');
+        this.jetragonImage = document.querySelector('.pal-circle:last-child img');
         this.evolutionOrder = [
             'LAMBALL', 'CHIKIPI', 'FOXPARKS', 'PENGULLET', 'CATTIVA',
             'LIFMUNK', 'FUACK', 'ROOBY', 'ARSOX', 'MAU', 'VERDASH', 'JETRAGON'
@@ -102,6 +103,24 @@ export class UIManager {
         this.restartButton = this.gameOverScreen.querySelector('.restart-button');
         this.restartButtonCallback = callback;
         this.restartButton.addEventListener('click', this.restartButtonCallback);
+    }
+
+    spinJetragon(onComplete) {
+        if (!this.jetragonImage) {
+            this.jetragonImage = document.querySelector('.pal-circle:last-child img');
+            if (!this.jetragonImage) return;
+        }
+
+        // Add CSS animation
+        this.jetragonImage.style.transition = 'transform 0.5s ease-in-out';
+        this.jetragonImage.style.transform = 'rotate(360deg)';
+
+        // Reset after animation
+        setTimeout(() => {
+            this.jetragonImage.style.transition = '';
+            this.jetragonImage.style.transform = '';
+            if (onComplete) onComplete();
+        }, 500);
     }
 
     cleanup() {

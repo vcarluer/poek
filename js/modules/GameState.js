@@ -7,6 +7,8 @@ export class GameState {
         this.highScore = parseInt(localStorage.getItem('highScore')) || 0;
         this.minDropDelay = 300; // Minimum 0.3 second between drops
         this.safetyMargin = 100; // Pixels of extra clearance needed before next drop
+        this.recentMerges = []; // Track recent merges timestamps
+        this.isJetragonSpinning = false; // Track if JetRagon spin animation is active
     }
 
     reset() {
@@ -132,4 +134,24 @@ export class GameState {
     removePal(pal) { this.pals.delete(pal); }
     setSmokeEffects(effects) { this.smokeEffects = effects; }
     setGameOver(value) { this.gameOver = value; }
+
+    // Track merges for rapid merge detection
+    trackMerge() {
+        const now = Date.now();
+        // Remove merges older than 1 second
+        this.recentMerges = this.recentMerges.filter(time => now - time < 1000);
+        // Add new merge
+        this.recentMerges.push(now);
+        
+        // Check if we have 3 merges in the last second
+        return this.recentMerges.length >= 3;
+    }
+
+    setJetragonSpinning(value) {
+        this.isJetragonSpinning = value;
+    }
+
+    isJetragonSpinningActive() {
+        return this.isJetragonSpinning;
+    }
 }
