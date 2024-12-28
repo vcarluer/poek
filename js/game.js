@@ -3,7 +3,7 @@ class Game {
         try {
             this.dropTimeout = null;
             this.lastDroppedPal = null;
-            this.minDropDelay = 1000; // Minimum 1 second between drops
+            this.minDropDelay = 500; // Minimum 0.5 second between drops
             this.lastDropTime = 0; // Track when the last Pal was dropped
             this.discoveredPals = new Set(['LAMBALL']); // Start with LAMBALL discovered
             this.canvas = document.getElementById('game-canvas');
@@ -12,13 +12,13 @@ class Game {
             }
 
             // Set canvas size based on viewport
-            this.canvas.width = Math.min(window.innerWidth * 0.9, 500);
+            this.canvas.width = Math.min(window.innerWidth * 0.9, 450); // Reduced max width for better mobile ratio
             // Adjust canvas height based on screen size - taller on mobile
             const isMobile = window.innerWidth <= 768;
-            this.canvas.height = window.innerHeight * (isMobile ? 0.75 : 0.6);
+            this.canvas.height = window.innerHeight * (isMobile ? 0.85 : 0.6);
             
             // Define zones - smaller selection zone on mobile
-            this.selectionZoneHeight = Math.min(window.innerHeight * 0.15, 100); // 15% of viewport height, max 100px
+            this.selectionZoneHeight = Math.min(window.innerHeight * (isMobile ? 0.12 : 0.15), 100); // 12% on mobile, 15% on desktop
             this.playZoneHeight = this.canvas.height - this.selectionZoneHeight;
 
             // Get context after setting size
@@ -81,12 +81,12 @@ class Game {
 
     handleResize() {
         // Update canvas size
-        this.canvas.width = Math.min(window.innerWidth * 0.9, 500);
+        this.canvas.width = Math.min(window.innerWidth * 0.9, 450);
         const isMobile = window.innerWidth <= 768;
-        this.canvas.height = window.innerHeight * (isMobile ? 0.75 : 0.6);
+        this.canvas.height = window.innerHeight * (isMobile ? 0.85 : 0.6);
         
         // Update zones
-        this.selectionZoneHeight = Math.min(window.innerHeight * 0.15, 100);
+        this.selectionZoneHeight = Math.min(window.innerHeight * (isMobile ? 0.12 : 0.15), 100);
         this.playZoneHeight = this.canvas.height - this.selectionZoneHeight;
         
         // Update gravity
@@ -158,10 +158,11 @@ class Game {
 
     setupEventListeners() {
         let currentX = 0;
+        let isProcessingAction = false;
 
         // Mouse/touch start handler
-        const startHandler = (e) => {
-            if (this.gameOver) return;
+        const startHandler = async (e) => {
+            if (this.gameOver || isProcessingAction) return;
             
             // Prevent default browser behavior for all events
             e.preventDefault();
@@ -172,6 +173,8 @@ class Game {
             currentX = clientX - rect.left;
             
             if (!this.currentPal) {
+                isProcessingAction = true;
+                
                 // Check if we can create a new Pal
                 const timeSinceLastDrop = Date.now() - this.lastDropTime;
                 const canCreateNew = (!this.lastDroppedPal || 
@@ -180,8 +183,14 @@ class Game {
                     timeSinceLastDrop >= this.minDropDelay;
                 
                 if (canCreateNew) {
+                    await new Promise(resolve => setTimeout(resolve, 25)); // Small delay for better control
                     this.createNewPal();
                 }
+                
+                // Reset processing flag after a minimum delay
+                setTimeout(() => {
+                    isProcessingAction = false;
+                }, this.minDropDelay);
             }
         };
 
@@ -266,30 +275,40 @@ class Game {
                 currentX = clientX - rect.left;
             }
 
-            // Drop the Pal if we have one
-            if (this.currentPal) {
+            // Drop the Pal if we have one and we're not processing an action
+            if (this.currentPal && !isProcessingAction) {
+                isProcessingAction = true;
                 this.dropCurrentPal(currentX);
-            }
-
-            // Schedule next Pal creation
-            this.dropTimeout = setTimeout(() => {
-                const checkAndCreate = () => {
-                    if (this.gameOver || this.currentPal) return;
-                    
-                    const timeSinceLastDrop = Date.now() - this.lastDropTime;
-                    if ((!this.lastDroppedPal || 
-                        this.lastDroppedPal.body.position.y > 
-                        Pal.TYPES[this.lastDroppedPal.type].radius * 5) && 
-                        timeSinceLastDrop >= this.minDropDelay) {
-                        this.createNewPal();
-                    } else {
-                        // Check again in a short interval
-                        setTimeout(checkAndCreate, 100);
-                    }
-                };
                 
-                checkAndCreate();
-            }, this.minDropDelay);
+                // Clear any existing timeout
+                if (this.dropTimeout) {
+                    clearTimeout(this.dropTimeout);
+                }
+
+                // Schedule next Pal creation with proper delay
+                this.dropTimeout = setTimeout(() => {
+                    const checkAndCreate = () => {
+                        if (this.gameOver || this.currentPal) {
+                            isProcessingAction = false;
+                            return;
+                        }
+                        
+                        const timeSinceLastDrop = Date.now() - this.lastDropTime;
+                        if ((!this.lastDroppedPal || 
+                            this.lastDroppedPal.body.position.y > 
+                            Pal.TYPES[this.lastDroppedPal.type].radius * 5) && 
+                            timeSinceLastDrop >= this.minDropDelay) {
+                            this.createNewPal();
+                            isProcessingAction = false;
+                        } else {
+                            // Check again in a short interval
+                            setTimeout(checkAndCreate, 100);
+                        }
+                    };
+                    
+                    checkAndCreate();
+                }, this.minDropDelay);
+            }
         };
 
         // Bind all handlers to maintain context and scope
@@ -405,26 +424,34 @@ class Game {
                     // Update discovered Pals and evolution list
                     this.discoveredPals.add(nextType);
                     this.updateEvolutionList();
-                }
-            }
 
-            // Check for game over conditions
-            // 1. Pal touches top of play zone (not selection zone)
-            Array.from(this.pals).forEach(pal => {
-                if (!Matter.Body.isStatic(pal.body) && // Only check non-static Pals
-                    pal.body.position.y < this.selectionZoneHeight + Pal.TYPES[pal.type].radius) {
-                    this.gameOver = true;
-                    alert(`Game Over! Score ${this.score}`);
+                    // Check for game over after fusion
+                    setTimeout(() => this.checkGameOver(), 0);
                 }
-            });
-            
-            // 2. More than 4 Jetragons exist
-            const jetragonCount = Array.from(this.pals).filter(p => p.type === 'JETRAGON').length;
-            if (jetragonCount > 4) {
-                this.gameOver = true;
-                alert(`Game Over! Too many Jetragons (${jetragonCount}/4). Score ${this.score}`);
             }
         });
+    }
+
+    checkGameOver() {
+        if (this.gameOver) return;
+
+        // 1. Check if any non-static Pal touches top of play zone
+        for (const pal of Array.from(this.pals)) {
+            if (!pal.body || !this.pals.has(pal)) continue; // Skip if pal was removed
+            
+            if (!pal.body.isStatic && pal.body.position.y < this.selectionZoneHeight + Pal.TYPES[pal.type].radius) {
+                this.gameOver = true;
+                alert(`Game Over! Score ${this.score}`);
+                return;
+            }
+        }
+        
+        // 2. Check for too many Jetragons
+        const jetragonCount = Array.from(this.pals).filter(p => p.type === 'JETRAGON').length;
+        if (jetragonCount > 4) {
+            this.gameOver = true;
+            alert(`Game Over! Too many Jetragons (${jetragonCount}/4). Score ${this.score}`);
+        }
     }
 
     loadImage(src) {
@@ -459,12 +486,14 @@ class Game {
                 circle.appendChild(img);
             } else {
                 // Show question mark
-                circle.style.backgroundColor = '#2c3e50';
+                circle.style.backgroundColor = 'rgba(44, 62, 80, 0.6)';
                 const questionMark = document.createElement('span');
                 questionMark.textContent = '?';
                 questionMark.style.color = '#ecf0f1';
                 questionMark.style.fontSize = '20px';
                 questionMark.style.fontWeight = 'bold';
+                questionMark.style.position = 'relative';
+                questionMark.style.zIndex = '1';
                 circle.appendChild(questionMark);
             }
         });
