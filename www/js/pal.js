@@ -1,17 +1,17 @@
 class Pal {
     static TYPES = {
-        LAMBALL: { radius: 20, score: 2, next: 'CHIKIPI', image: 'assets/lamball.png', color: '#F8E8E8' },
-        CHIKIPI: { radius: 25, score: 4, next: 'FOXPARKS', image: 'assets/chikipi.png', color: '#FFE5B4' },
-        FOXPARKS: { radius: 30, score: 8, next: 'PENGULLET', image: 'assets/foxparks.png', color: '#FF7F50' },
-        PENGULLET: { radius: 35, score: 16, next: 'CATTIVA', image: 'assets/pengullet.png', color: '#87CEEB' },
-        CATTIVA: { radius: 40, score: 32, next: 'LIFMUNK', image: 'assets/cattiva.png', color: '#DDA0DD' },
-        LIFMUNK: { radius: 45, score: 64, next: 'FUACK', image: 'assets/lifmunk.png', color: '#90EE90' },
-        FUACK: { radius: 50, score: 128, next: 'ROOBY', image: 'assets/fuack.png', color: '#4682B4' },
-        ROOBY: { radius: 55, score: 256, next: 'ARSOX', image: 'assets/rooby.png', color: '#CD5C5C' },
-        ARSOX: { radius: 60, score: 512, next: 'MAU', image: 'assets/arsox.png', color: '#FF4500' },
-        MAU: { radius: 65, score: 768, next: 'VERDASH', image: 'assets/mau.png', color: '#9370DB' },
-        VERDASH: { radius: 68, score: 896, next: 'JETRAGON', image: 'assets/verdash.png', color: '#32CD32' },
-        JETRAGON: { radius: 70, score: 1024, next: null, image: 'assets/jetragon.png', color: '#4169E1' }
+        LAMBALL: { radius: 10, score: 2, next: 'CHIKIPI', image: 'assets/lamball.png', color: '#F8E8E8' },
+        CHIKIPI: { radius: 15, score: 4, next: 'FOXPARKS', image: 'assets/chikipi.png', color: '#FFE5B4' },
+        FOXPARKS: { radius: 21, score: 8, next: 'PENGULLET', image: 'assets/foxparks.png', color: '#FF7F50' },
+        PENGULLET: { radius: 31, score: 16, next: 'CATTIVA', image: 'assets/pengullet.png', color: '#87CEEB' },
+        CATTIVA: { radius: 45, score: 32, next: 'LIFMUNK', image: 'assets/cattiva.png', color: '#DDA0DD' },
+        LIFMUNK: { radius: 65, score: 64, next: 'FUACK', image: 'assets/lifmunk.png', color: '#90EE90' },
+        FUACK: { radius: 94, score: 128, next: 'ROOBY', image: 'assets/fuack.png', color: '#4682B4' },
+        ROOBY: { radius: 136, score: 256, next: 'ARSOX', image: 'assets/rooby.png', color: '#CD5C5C' },
+        ARSOX: { radius: 197, score: 512, next: 'MAU', image: 'assets/arsox.png', color: '#FF4500' },
+        MAU: { radius: 286, score: 768, next: 'VERDASH', image: 'assets/mau.png', color: '#9370DB' },
+        VERDASH: { radius: 340, score: 896, next: 'JETRAGON', image: 'assets/verdash.png', color: '#32CD32' },
+        JETRAGON: { radius: 393, score: 1024, next: null, image: 'assets/jetragon.png', color: '#4169E1' }
     };
 
     static calculateProbabilities() {
@@ -92,8 +92,8 @@ class Pal {
         
         // Create the Matter.js body
         this.body = Matter.Bodies.circle(x, y, radius, {
-            restitution: 0.7,
-            friction: 0.05,
+            restitution: 0.3,
+            friction: 0.2,
             density: 0.002,
             label: type
         });
