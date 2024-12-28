@@ -3,7 +3,7 @@ export class UIManager {
         this.scoreElement = document.getElementById('score');
         this.nextPalElement = document.getElementById('next-pal');
         this.gameOverScreen = document.querySelector('.game-over');
-        this.jetragonImage = document.querySelector('.pal-circle:last-child img');
+        this.jetragonImage = document.getElementById('jetragon');
         this.evolutionOrder = [
             'LAMBALL', 'CHIKIPI', 'FOXPARKS', 'PENGULLET', 'CATTIVA',
             'LIFMUNK', 'FUACK', 'ROOBY', 'ARSOX', 'MAU', 'VERDASH', 'JETRAGON'
@@ -87,15 +87,26 @@ export class UIManager {
     }
 
     setupTestButton(isDev, callback) {
+        const container = document.querySelector('.test-button-container');
         this.testButton = document.getElementById('test-game-over');
-        if (this.testButton) {
-            if (isDev) {
-                this.testButton.parentElement.style.display = 'block';
-                this.testButtonCallback = callback;
-                this.testButton.addEventListener('click', this.testButtonCallback);
-            } else {
-                this.testButton.parentElement.style.display = 'none';
-            }
+        
+        if (isDev && container && this.testButton) {
+            // Show container
+            container.style.display = 'flex';
+            container.style.gap = '10px';
+            
+            // Setup game over test button
+            this.testButtonCallback = callback;
+            this.testButton.addEventListener('click', this.testButtonCallback);
+            
+            // Add spin test button
+            const spinButton = document.createElement('button');
+            spinButton.className = 'test-button';
+            spinButton.textContent = 'Test Spin';
+            spinButton.addEventListener('click', () => this.spinJetragon());
+            container.appendChild(spinButton);
+        } else if (container) {
+            container.style.display = 'none';
         }
     }
 
@@ -107,18 +118,22 @@ export class UIManager {
 
     spinJetragon(onComplete) {
         if (!this.jetragonImage) {
-            this.jetragonImage = document.querySelector('.pal-circle:last-child img');
+            this.jetragonImage = document.getElementById('jetragon');
             if (!this.jetragonImage) return;
         }
 
-        // Add CSS animation
+        // Pause float animation
+        this.jetragonImage.style.animation = 'none';
+
+        // Add rotation animation
         this.jetragonImage.style.transition = 'transform 0.5s ease-in-out';
-        this.jetragonImage.style.transform = 'rotate(360deg)';
+        this.jetragonImage.style.transform = 'translate(-50%, 0) rotate(360deg)';
 
         // Reset after animation
         setTimeout(() => {
             this.jetragonImage.style.transition = '';
             this.jetragonImage.style.transform = '';
+            this.jetragonImage.style.animation = 'float 3s ease-in-out infinite';
             if (onComplete) onComplete();
         }, 500);
     }

@@ -105,8 +105,8 @@
             width: 100%;
         }
         @keyframes float {
-            0%, 100% { transform: translate(-50%, 0); }
-            50% { transform: translate(-50%, -15px); }
+            0%, 100% { transform: translate(-50%, 0) rotate(0deg); }
+            50% { transform: translate(-50%, -15px) rotate(0deg); }
         }
         .decorative-pal {
             position: absolute;
@@ -123,6 +123,7 @@
             width: clamp(120px, 35vw, 160px);
             height: clamp(120px, 35vw, 160px);
             animation: float 3s ease-in-out infinite;
+            transform-origin: center;
         }
         .game-info {
             position: absolute;
