@@ -13,7 +13,13 @@ class Game {
 
             // Set canvas size based on viewport
             this.canvas.width = Math.min(window.innerWidth * 0.9, 500);
-            this.canvas.height = window.innerHeight * 0.5;
+            // Adjust canvas height based on screen size - taller on mobile
+            const isMobile = window.innerWidth <= 768;
+            this.canvas.height = window.innerHeight * (isMobile ? 0.7 : 0.6);
+            
+            // Define zones - smaller selection zone on mobile
+            this.selectionZoneHeight = Math.min(window.innerHeight * 0.12, 80); // 12% of viewport height, max 80px
+            this.playZoneHeight = this.canvas.height - this.selectionZoneHeight;
 
             // Get context after setting size
             this.ctx = this.canvas.getContext('2d', {
@@ -39,9 +45,9 @@ class Game {
             this.engine = Matter.Engine.create();
             this.world = this.engine.world;
             
-            // Disable gravity in x direction
+            // Adjust gravity based on screen size
             this.engine.world.gravity.x = 0;
-            this.engine.world.gravity.y = 0.8;
+            this.engine.world.gravity.y = isMobile ? 0.6 : 0.8; // Lower gravity on mobile for better control
 
             this.score = 0;
             this.gameOver = false;
@@ -56,7 +62,7 @@ class Game {
                 strokeStyle: '#34495e'
             };
 
-            // Create walls
+            // Create walls for the play zone
             this.createWalls();
 
             // Setup collision detection
@@ -64,10 +70,31 @@ class Game {
 
             // Setup event listeners
             this.setupEventListeners();
+
+            // Handle resize
+            window.addEventListener('resize', this.handleResize.bind(this));
         } catch (error) {
             console.error('Failed to initialize game:', error);
             alert('Failed to initialize game. Please refresh the page.');
         }
+    }
+
+    handleResize() {
+        // Update canvas size
+        this.canvas.width = Math.min(window.innerWidth * 0.9, 500);
+        const isMobile = window.innerWidth <= 768;
+        this.canvas.height = window.innerHeight * (isMobile ? 0.7 : 0.6);
+        
+        // Update zones
+        this.selectionZoneHeight = Math.min(window.innerHeight * 0.12, 80);
+        this.playZoneHeight = this.canvas.height - this.selectionZoneHeight;
+        
+        // Update gravity
+        this.engine.world.gravity.y = isMobile ? 0.6 : 0.8;
+        
+        // Recreate walls with new dimensions
+        Matter.World.remove(this.world, this.walls);
+        this.createWalls();
     }
 
     async initialize() {
@@ -108,20 +135,20 @@ class Game {
                 20,
                 wallOptions
             ),
-            // Left wall
+            // Left wall (only in play zone)
             Matter.Bodies.rectangle(
                 0,
-                this.canvas.height / 2,
+                this.selectionZoneHeight + (this.playZoneHeight / 2),
                 20,
-                this.canvas.height,
+                this.playZoneHeight,
                 wallOptions
             ),
-            // Right wall
+            // Right wall (only in play zone)
             Matter.Bodies.rectangle(
                 this.canvas.width,
-                this.canvas.height / 2,
+                this.selectionZoneHeight + (this.playZoneHeight / 2),
                 20,
-                this.canvas.height,
+                this.playZoneHeight,
                 wallOptions
             )
         ];
@@ -305,10 +332,10 @@ class Game {
         const type = this.nextType;
         const radius = Pal.TYPES[type].radius;
         
-        // Create new Pal at top of screen
+        // Create new Pal in selection zone
         const pal = new Pal(
             this.canvas.width / 2,
-            radius,
+            radius + 10, // Add padding from the top
             type,
             this.world,
             this.images
@@ -382,9 +409,10 @@ class Game {
             }
 
             // Check for game over conditions
-            // 1. Pal touches top of screen
+            // 1. Pal touches top of play zone (not selection zone)
             Array.from(this.pals).forEach(pal => {
-                if (pal.body.position.y < Pal.TYPES[pal.type].radius) {
+                if (!Matter.Body.isStatic(pal.body) && // Only check non-static Pals
+                    pal.body.position.y < this.selectionZoneHeight + Pal.TYPES[pal.type].radius) {
                     this.gameOver = true;
                     alert(`Game Over! Score ${this.score}`);
                 }
@@ -452,6 +480,14 @@ class Game {
         // Clear canvas with background color
         this.ctx.fillStyle = '#34495e';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Draw selection zone with different color
+        this.ctx.fillStyle = '#2c3e50';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.selectionZoneHeight);
+        
+        // Draw separator line
+        this.ctx.fillStyle = '#ecf0f1';
+        this.ctx.fillRect(0, this.selectionZoneHeight - 2, this.canvas.width, 4);
 
         // Draw walls
         this.walls.forEach(wall => {
