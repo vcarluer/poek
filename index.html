@@ -71,6 +71,10 @@
             margin: 0 auto;
             padding: 10px;
             width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         #game-canvas {
             background-color: #34495e;
@@ -85,6 +89,7 @@
             image-rendering: -webkit-optimize-contrast;
             image-rendering: -moz-crisp-edges;
             image-rendering: pixelated;
+            width: 100%;
         }
         @keyframes float {
             0%, 100% { transform: translate(-50%, 0); }
@@ -109,6 +114,7 @@
         .game-info {
             position: absolute;
             width: 100%;
+            max-width: 500px;
             top: -30px;
             display: -ms-flexbox;
             display: flex;
@@ -116,6 +122,8 @@
             justify-content: space-between;
             padding: 0 10px;
             z-index: 2;
+            left: 50%;
+            transform: translateX(-50%);
         }
         #score {
             font-size: clamp(24px, 6vw, 32px);
@@ -157,11 +165,12 @@
             display: flex;
             -ms-flex-align: center;
             align-items: center;
-            -ms-flex-pack: start;
-            justify-content: flex-start;
+            -ms-flex-pack: center;
+            justify-content: center;
             gap: 8px;
             margin-top: 10px;
             width: 100%;
+            max-width: 500px;
             overflow-x: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
