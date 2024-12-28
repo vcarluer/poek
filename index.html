@@ -85,6 +85,25 @@
             image-rendering: -moz-crisp-edges;
             image-rendering: pixelated;
         }
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, -15px); }
+        }
+        .decorative-pal {
+            position: absolute;
+            z-index: 0;
+            pointer-events: none;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 50%;
+        }
+        #jetragon {
+            top: -180px;
+            left: 50%;
+            width: 300px;
+            height: 300px;
+            animation: float 3s ease-in-out infinite;
+        }
         .game-info {
             position: absolute;
             width: 100%;
@@ -167,6 +186,7 @@
             <div id="score">0</div>
             <div id="next-pal"><img src="" alt="Next Pal"></div>
         </div>
+        <img id="jetragon" class="decorative-pal" src="assets/jetragon.png" alt="">
         <canvas id="game-canvas"></canvas>
         <div class="evolution-chain">
             <div class="pal-circle"></div>
