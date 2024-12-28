@@ -25,51 +25,51 @@ const replicate = new Replicate({
 const palData = [
     { 
         name: 'lamball', 
-        prompt: 'A cute sheep-like creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A fluffy white Lamball with wool-like texture. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A cute sheep-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A fluffy white Lamball with wool-like texture. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
     },
     { 
         name: 'chikipi',
-        prompt: 'A bird-like creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A yellow Chikipi with small wing details. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A bird-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A yellow Chikipi with small wing details. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
     },
     { 
         name: 'foxparks',
-        prompt: 'A fox-like creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. An orange Foxparks with flame patterns. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A fox-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. An orange Foxparks with flame patterns. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
     },
     { 
         name: 'pengullet',
-        prompt: 'A penguin-like creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A blue Pengullet with ice crystal patterns. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A penguin-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A blue Pengullet with ice crystal patterns. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
     },
     { 
         name: 'cattiva',
-        prompt: 'A cat-like creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A purple Cattiva with mischievous expression. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A cat-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A purple Cattiva with mischievous expression. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
     },
     { 
         name: 'lifmunk',
-        prompt: 'A squirrel-like creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A green Lifmunk with leaf patterns. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A squirrel-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A green Lifmunk with leaf patterns. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
     },
     { 
         name: 'fuack',
-        prompt: 'A duck-like creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A blue Fuack with water droplet patterns. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A duck-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A blue Fuack with water droplet patterns. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
     },
     { 
         name: 'rooby',
-        prompt: 'A kangaroo-like creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A red Rooby with flame patterns. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A kangaroo-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A red Rooby with flame patterns. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
     },
     { 
         name: 'arsox',
-        prompt: 'A fox-like creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. An orange Arsox with flame patterns on its tail. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A fox-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. An orange Arsox with flame patterns on its tail. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
     },
     { 
         name: 'jetragon',
-        prompt: 'A dragon-like creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A blue Jetragon with energy patterns on its wings. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A dragon-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A blue Jetragon with energy patterns on its wings. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
     },
     {
         name: 'mau',
-        prompt: 'A cat-like creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A sleek black Mau with golden Egyptian-style markings. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A cat-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A sleek black Mau with golden Egyptian-style markings. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
     },
     {
         name: 'verdash',
-        prompt: 'A humanoid plant creature from Palworld in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A green Verdash with leaf-like clothing and elegant plant features. Must be in Palworld art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A humanoid plant creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A green Verdash with leaf-like clothing and elegant plant features. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
     }
 ];
 
@@ -114,7 +114,7 @@ async function generateAndSaveImage(pal) {
             "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
             {
                 input: {
-                    prompt: pal.prompt + ", masterpiece quality, official Palworld artwork, perfect circular composition",
+                    prompt: pal.prompt + ", masterpiece quality, official Pal artwork, perfect circular composition",
                     negative_prompt: "different proportions, different anatomy, different design, extra limbs, missing features, wrong colors, detailed background, deformed, ugly, blurry, bad art, bad anatomy, bad proportions, extra digits, fewer digits, cropped, worst quality, low quality, multiple views, grid, 3d render, photograph, realistic, nsfw, suggestive, rectangular frame, square frame",
                     width: 768,
                     height: 768,
