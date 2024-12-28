@@ -18,7 +18,7 @@ class Game {
             this.canvas.height = window.innerHeight * (isMobile ? 0.75 : 0.6);
             
             // Define zones - smaller selection zone on mobile
-            this.selectionZoneHeight = Math.min(window.innerHeight * 0.12, 80); // 12% of viewport height, max 80px
+            this.selectionZoneHeight = Math.min(window.innerHeight * 0.15, 100); // 15% of viewport height, max 100px
             this.playZoneHeight = this.canvas.height - this.selectionZoneHeight;
 
             // Get context after setting size
@@ -86,7 +86,7 @@ class Game {
         this.canvas.height = window.innerHeight * (isMobile ? 0.75 : 0.6);
         
         // Update zones
-        this.selectionZoneHeight = Math.min(window.innerHeight * 0.12, 80);
+        this.selectionZoneHeight = Math.min(window.innerHeight * 0.15, 100);
         this.playZoneHeight = this.canvas.height - this.selectionZoneHeight;
         
         // Update gravity
@@ -439,7 +439,7 @@ class Game {
     updateEvolutionList() {
         const evolutionOrder = [
             'LAMBALL', 'CHIKIPI', 'FOXPARKS', 'PENGULLET', 'CATTIVA',
-            'LIFMUNK', 'FUACK', 'ROOBY', 'ARSOX', 'JETRAGON'
+            'LIFMUNK', 'FUACK', 'ROOBY', 'ARSOX', 'VERDASH', 'MAU', 'JETRAGON'
         ];
 
         const circles = document.querySelectorAll('.pal-circle');
