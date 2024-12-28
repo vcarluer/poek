@@ -7,6 +7,17 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Load configuration
+const configPath = path.join(__dirname, '..', 'config', 'imageGeneration.json');
+let config;
+try {
+    const configData = fs.readFileSync(configPath, 'utf8');
+    config = JSON.parse(configData);
+} catch (error) {
+    console.error('Error loading configuration:', error);
+    process.exit(1);
+}
+
 const replicate = new Replicate({
     auth: process.env.REPLICATE_API_TOKEN,
 });
@@ -54,15 +65,42 @@ const palData = [
     }
 ];
 
-// Ensure assets directory exists
+// Ensure required directories exist
 const assetsDir = path.join(__dirname, '..', 'assets');
-if (!fs.existsSync(assetsDir)) {
-    fs.mkdirSync(assetsDir);
+const backupDir = path.join(__dirname, '..', config.backupDirectory);
+
+[assetsDir, backupDir].forEach(dir => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+});
+
+async function backupImage(filePath, palName) {
+    if (!fs.existsSync(filePath)) return;
+    
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const backupPath = path.join(backupDir, `${palName}-${timestamp}.png`);
+    fs.copyFileSync(filePath, backupPath);
+    console.log(`Backup created at: ${backupPath}`);
 }
 
 async function generateAndSaveImage(pal) {
     try {
+        const imagePath = path.join(assetsDir, `${pal.name}.png`);
+        const palConfig = config.pals[pal.name] || { forceRegenerate: false };
+
+        // Check if image already exists and force flag is not set
+        if (fs.existsSync(imagePath) && !palConfig.forceRegenerate) {
+            console.log(`Skipping ${pal.name} - image already exists and force regenerate is not set`);
+            return;
+        }
+
         console.log(`Generating image for ${pal.name}...`);
+        
+        // Backup existing image if it exists
+        if (fs.existsSync(imagePath)) {
+            await backupImage(imagePath, pal.name);
+        }
         
         const output = await replicate.run(
             "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
@@ -88,10 +126,15 @@ async function generateAndSaveImage(pal) {
         const buffer = Buffer.from(arrayBuffer);
         
         // Save the image
-        const filePath = path.join(assetsDir, `${pal.name}.png`);
-        fs.writeFileSync(filePath, buffer);
+        fs.writeFileSync(imagePath, buffer);
         
         console.log(`Successfully generated and saved image for ${pal.name}`);
+        
+        // Reset force flag after successful generation
+        if (palConfig.forceRegenerate) {
+            config.pals[pal.name].forceRegenerate = false;
+            fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+        }
     } catch (error) {
         console.error(`Error generating image for ${pal.name}:`, error);
     }
