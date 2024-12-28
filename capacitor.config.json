@@ -1,0 +1,16 @@
+{
+  "appId": "com.gamersassociate.palmerge",
+  "appName": "PalMerge",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "buildOptions": {
+      "keystorePath": "release-key.keystore",
+      "keystoreAlias": "key0",
+      "keystorePassword": "g4mersassociate_",
+      "keystoreAliasPassword": "g4mersassociate_"
+    }
+  }
+}

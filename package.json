@@ -11,8 +11,14 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/cli": "^6.2.0",
+    "@capacitor/core": "^6.2.0",
     "canvas": "^3.0.0",
     "openai": "^4.77.0",
     "replicate": "^1.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
   }
 }

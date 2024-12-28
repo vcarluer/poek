@@ -3,7 +3,6 @@ class Game {
         try {
             this.dropTimeout = null;
             this.lastDroppedPal = null;
-            this.smokeEffects = [];
             this.highScore = parseInt(localStorage.getItem('highScore')) || 0;
             this.minDropDelay = 300; // Minimum 0.3 second between drops
             this.lastDropTime = 0; // Track when the last Pal was dropped
@@ -15,14 +14,14 @@ class Game {
             }
 
             // Set canvas size based on viewport with minimum dimensions
-            this.canvas.width = Math.min(window.innerWidth * 0.95, 393);
+            this.canvas.width = Math.min(window.innerWidth * 0.9, 450);
             // Use mobile height ratio for all devices with minimum height
-            this.canvas.height = Math.max(window.innerHeight * 0.92, 400);
+            this.canvas.height = Math.max(window.innerHeight * 0.85, 400);
             
             // Define zones - set to Cattiva's diameter (radius 40 * 2 = 80)
-            this.selectionZoneHeight = 70;
-            // Ensure minimum play zone height of 320 pixels (400 - 70)
-            this.playZoneHeight = Math.max(this.canvas.height - this.selectionZoneHeight, 330);
+            this.selectionZoneHeight = 80;
+            // Ensure minimum play zone height of 320 pixels (400 - 80)
+            this.playZoneHeight = Math.max(this.canvas.height - this.selectionZoneHeight, 320);
 
             // Get context after setting size
             this.ctx = this.canvas.getContext('2d', {
@@ -107,13 +106,13 @@ class Game {
 
     handleResize() {
         // Update canvas size with minimum dimensions
-        this.canvas.width = Math.min(window.innerWidth * 0.95, 393);
-        this.canvas.height = Math.max(window.innerHeight * 0.92, 400);
+        this.canvas.width = Math.min(window.innerWidth * 0.9, 450);
+        this.canvas.height = Math.max(window.innerHeight * 0.85, 400);
         
         // Update zones - set to Cattiva's diameter (radius 40 * 2 = 80)
-        this.selectionZoneHeight = 70;
-        // Ensure minimum play zone height of 320 pixels (400 - 70)
-        this.playZoneHeight = Math.max(this.canvas.height - this.selectionZoneHeight, 330);
+        this.selectionZoneHeight = 80;
+        // Ensure minimum play zone height of 320 pixels (400 - 80)
+        this.playZoneHeight = Math.max(this.canvas.height - this.selectionZoneHeight, 320);
         
         // Use mobile gravity for consistent physics
         this.engine.world.gravity.y = 1.0;
@@ -437,12 +436,10 @@ class Game {
                     this.pals.delete(palA);
                     this.pals.delete(palB);
 
-                    // Create smoke effect at merge point
+                    // Create new fused Pal
                     const midX = (bodyA.position.x + bodyB.position.x) / 2;
                     const midY = (bodyA.position.y + bodyB.position.y) / 2;
-                    this.smokeEffects.push(new Smoke(midX, midY, Pal.TYPES[palA.type].radius));
                     
-                    // Create new fused Pal
                     const fusedPal = new Pal(
                         midX,
                         midY,
@@ -690,15 +687,6 @@ class Game {
         
         // Draw Pals
         this.pals.forEach(pal => pal.draw(this.ctx));
-        
-        // Draw and update smoke effects
-        this.smokeEffects = this.smokeEffects.filter(smoke => {
-            if (!smoke.isFinished()) {
-                smoke.draw(this.ctx);
-                return true;
-            }
-            return false;
-        });
 
         // Create initial Pal if none exists
         if (!this.currentPal && this.pals.size === 0 && !this.gameOver) {

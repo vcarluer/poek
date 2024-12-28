@@ -1,0 +1,17 @@
+{
+  "backupDirectory": "assets/backups",
+  "pals": {
+    "lamball": { "forceRegenerate": false },
+    "chikipi": { "forceRegenerate": false },
+    "foxparks": { "forceRegenerate": false },
+    "pengullet": { "forceRegenerate": false },
+    "cattiva": { "forceRegenerate": false },
+    "lifmunk": { "forceRegenerate": false },
+    "fuack": { "forceRegenerate": false },
+    "rooby": { "forceRegenerate": false },
+    "arsox": { "forceRegenerate": false },
+    "jetragon": { "forceRegenerate": false },
+    "mau": { "forceRegenerate": false },
+    "verdash": { "forceRegenerate": false }
+  }
+}
