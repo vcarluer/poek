@@ -14,15 +14,11 @@ class Game {
                 throw new Error('Canvas element not found');
             }
 
-            // Set canvas size based on viewport with minimum dimensions
-            this.canvas.width = Math.min(window.innerWidth * 0.95, 393);
-            // Use mobile height ratio for all devices with minimum height
-            this.canvas.height = Math.max(window.innerHeight * 0.85, 400);
-            
-            // Define zones - set to Cattiva's diameter (radius 40 * 2 = 80)
-            this.selectionZoneHeight = 70;
-            // Ensure minimum play zone height of 320 pixels (400 - 70)
-            this.playZoneHeight = Math.max(this.canvas.height - this.selectionZoneHeight, 330);
+            // Set fixed dimensions for square play area
+            this.canvas.width = 393; // Fixed width for consistent gameplay
+            this.selectionZoneHeight = 140; // Height for Cattiva (radius 65 * 2 + padding)
+            this.playZoneHeight = 393; // Square play area matching width
+            this.canvas.height = this.playZoneHeight + this.selectionZoneHeight;
 
             // Get context after setting size
             this.ctx = this.canvas.getContext('2d', {
@@ -106,14 +102,11 @@ class Game {
     }
 
     handleResize() {
-        // Update canvas size with minimum dimensions
-        this.canvas.width = Math.min(window.innerWidth * 0.95, 393);
-        this.canvas.height = Math.max(window.innerHeight * 0.85, 400);
-        
-        // Update zones - set to Cattiva's diameter (radius 40 * 2 = 80)
-        this.selectionZoneHeight = 70;
-        // Ensure minimum play zone height of 320 pixels (400 - 70)
-        this.playZoneHeight = Math.max(this.canvas.height - this.selectionZoneHeight, 330);
+        // Set fixed dimensions for square play area
+        this.canvas.width = 393; // Fixed width for consistent gameplay
+        this.selectionZoneHeight = 140; // Height for Cattiva (radius 65 * 2 + padding)
+        this.playZoneHeight = 393; // Square play area matching width
+        this.canvas.height = this.playZoneHeight + this.selectionZoneHeight;
         
         // Use mobile gravity for consistent physics
         this.engine.world.gravity.y = 1.0;
