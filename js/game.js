@@ -40,7 +40,7 @@ class Game {
 
         // Set fixed dimensions for square play area
         this.canvas.width = 393; // Fixed width for consistent gameplay
-        this.selectionZoneHeight = 140; // Height for Cattiva (radius 65 * 2 + padding)
+        this.selectionZoneHeight = 100; // Height for Cattiva (radius 45 * 2 + padding)
         this.playZoneHeight = 393; // Square play area matching width
         this.canvas.height = this.playZoneHeight + this.selectionZoneHeight;
     }
@@ -199,7 +199,7 @@ class Game {
             if (this.uiManager) {
                 this.uiManager.cleanup();
             }
-
+            
             // Cleanup renderer
             if (this.renderer) {
                 this.renderer.cleanup();
