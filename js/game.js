@@ -397,7 +397,9 @@ class Game {
             const palA = Array.from(this.pals).find(p => p.body === bodyA);
             const palB = Array.from(this.pals).find(p => p.body === bodyB);
 
-            if (palA && palB && palA.type === palB.type) {
+            // Skip collision if either Pal is static (in drop zone)
+            if (palA && palB && palA.type === palB.type && 
+                !palA.body.isStatic && !palB.body.isStatic) {
                 const nextType = Pal.TYPES[palA.type].next;
                 
                 if (nextType) {
