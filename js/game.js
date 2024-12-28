@@ -485,9 +485,10 @@ class Game {
             this.highScore = this.score;
             localStorage.setItem('highScore', this.highScore);
             newHighScoreDisplay.style.display = 'block';
-            currentHighScore.textContent = this.score;
+            currentHighScore.style.display = 'none';
         } else {
             newHighScoreDisplay.style.display = 'none';
+            currentHighScore.style.display = 'block';
             currentHighScore.textContent = this.highScore;
         }
         
