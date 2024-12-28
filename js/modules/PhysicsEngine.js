@@ -24,9 +24,9 @@ export class PhysicsEngine {
         this.engine = this.Engine.create();
         this.world = this.engine.world;
         
-        // Use stronger gravity for better gameplay feel
+        // Increased gravity for better physics feel with heavier pals
         this.world.gravity.x = 0;
-        this.world.gravity.y = 2.0;
+        this.world.gravity.y = 2.5;
 
         // Create walls
         this.createWalls();
@@ -76,29 +76,81 @@ export class PhysicsEngine {
     }
 
     reset() {
-        // Remove collision listeners
-        this.Events.off(this.engine);
-        
-        // Clear world and engine
-        this.World.clear(this.world);
-        this.Engine.clear(this.engine);
-        
-        // Reinitialize engine with fresh state
-        this.initializeEngine();
+        try {
+            // Remove all bodies from the world first
+            if (this.world && this.world.bodies) {
+                for (let body of [...this.world.bodies]) {
+                    this.World.remove(this.world, body);
+                }
+            }
+
+            // Remove collision listeners
+            if (this.engine) {
+                this.Events.off(this.engine);
+            }
+            
+            // Clear world and engine
+            if (this.world) {
+                this.World.clear(this.world);
+            }
+            if (this.engine) {
+                this.Engine.clear(this.engine);
+                this.engine.enabled = false;
+                this.engine = null;
+            }
+            
+            // Get fresh Matter.js references
+            const { Engine, World, Bodies, Body, Events } = window.Matter;
+            this.Engine = Engine;
+            this.World = World;
+            this.Bodies = Bodies;
+            this.Body = Body;
+            this.Events = Events;
+            
+            // Reinitialize engine with fresh state
+            this.initializeEngine();
+        } catch (error) {
+            console.error('Error during physics reset:', error);
+            throw error; // Propagate error to trigger game restart failure
+        }
     }
 
     cleanup() {
-        // Remove collision listeners
-        this.Events.off(this.engine);
-        
-        // Clear world and engine
-        this.World.clear(this.world);
-        this.Engine.clear(this.engine);
-        
-        // Clear references
-        this.engine = null;
-        this.world = null;
-        this.walls = null;
+        try {
+            // Remove all bodies from the world first
+            if (this.world && this.world.bodies) {
+                for (let body of this.world.bodies) {
+                    this.World.remove(this.world, body);
+                }
+            }
+
+            // Remove collision listeners
+            if (this.engine) {
+                this.Events.off(this.engine);
+            }
+            
+            // Clear world and engine
+            if (this.world) {
+                this.World.clear(this.world);
+            }
+            if (this.engine) {
+                this.Engine.clear(this.engine);
+            }
+            
+            // Clear Matter.js references
+            this.Engine = null;
+            this.World = null;
+            this.Bodies = null;
+            this.Body = null;
+            this.Events = null;
+            
+            // Clear instance references
+            this.engine = null;
+            this.world = null;
+            this.walls = null;
+        } catch (error) {
+            console.error('Error during physics cleanup:', error);
+        }
     }
 
     addBody(body) {

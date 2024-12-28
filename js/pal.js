@@ -98,12 +98,12 @@ export class Pal {
         
         // Create the Matter.js body with adjusted physics properties
         this.body = Bodies.circle(x, y, radius, {
-            restitution: 0.2,
-            friction: 0.5,
-            density: 0.001,
+            restitution: 0.4, // Increased bounciness for better rolling
+            friction: 0.3, // Reduced friction to roll better
+            density: 0.005, // Increased mass
             label: type,
             slop: 0.05, // Reduce jittering
-            inertia: Infinity // Prevent rotation
+            // Removed inertia: Infinity to allow rotation
         });
 
         // Add the body to the world
