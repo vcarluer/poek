@@ -15,7 +15,7 @@ class Game {
             this.canvas.width = Math.min(window.innerWidth * 0.9, 500);
             // Adjust canvas height based on screen size - taller on mobile
             const isMobile = window.innerWidth <= 768;
-            this.canvas.height = window.innerHeight * (isMobile ? 0.7 : 0.6);
+            this.canvas.height = window.innerHeight * (isMobile ? 0.75 : 0.6);
             
             // Define zones - smaller selection zone on mobile
             this.selectionZoneHeight = Math.min(window.innerHeight * 0.12, 80); // 12% of viewport height, max 80px
@@ -83,7 +83,7 @@ class Game {
         // Update canvas size
         this.canvas.width = Math.min(window.innerWidth * 0.9, 500);
         const isMobile = window.innerWidth <= 768;
-        this.canvas.height = window.innerHeight * (isMobile ? 0.7 : 0.6);
+        this.canvas.height = window.innerHeight * (isMobile ? 0.75 : 0.6);
         
         // Update zones
         this.selectionZoneHeight = Math.min(window.innerHeight * 0.12, 80);
