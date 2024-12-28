@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -68,7 +68,7 @@
         .game-container {
             position: relative;
             margin: 0 auto;
-            padding: 5px;
+            padding: 5px 5px calc(env(safe-area-inset-bottom) + 70px) 5px;
             width: 100%;
             max-width: 393px;
             display: flex;
@@ -77,11 +77,15 @@
         }
         
         .evolution-container {
-            position: relative;
+            position: fixed;
             width: 100%;
             max-width: 393px;
             margin: 0 auto;
             padding: 0 5px;
+            bottom: max(env(safe-area-inset-bottom), 16px);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
         }
         #game-canvas {
             background-color: #34495e;
