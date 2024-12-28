@@ -99,12 +99,11 @@ export class UIManager {
             this.testButtonCallback = callback;
             this.testButton.addEventListener('click', this.testButtonCallback);
             
-            // Add spin test button
-            const spinButton = document.createElement('button');
-            spinButton.className = 'test-button';
-            spinButton.textContent = 'Test Spin';
-            spinButton.addEventListener('click', () => this.spinJetragon());
-            container.appendChild(spinButton);
+            // Setup spin test button
+            const spinButton = document.getElementById('test-spin');
+            if (spinButton) {
+                spinButton.addEventListener('click', () => this.spinJetragon());
+            }
         } else if (container) {
             container.style.display = 'none';
         }

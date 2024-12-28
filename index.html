@@ -105,8 +105,8 @@
             width: 100%;
         }
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, -15px); }
         }
 
         @keyframes spin {
@@ -116,16 +116,22 @@
 
         .jetragon-wrapper {
             position: fixed;
-            top: 0;
-            left: 50%;
+            top: 10px;
+            left: calc(50% - 10px);
             transform: translateX(-50%);
             animation: float 3s ease-in-out infinite;
+            width: clamp(120px, 35vw, 160px);
+            height: clamp(120px, 35vw, 160px);
+            z-index: 0;
         }
 
         #jetragon {
-            width: clamp(120px, 35vw, 160px);
-            height: clamp(120px, 35vw, 160px);
+            width: 100%;
+            height: 100%;
             transform-origin: center;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 50%;
         }
 
         #jetragon.spin {
@@ -194,6 +200,7 @@
             right: 20px;
             z-index: 1001;
             pointer-events: all;
+            gap: 10px;
         }
         .test-button {
             background: #FF4E50;
@@ -376,6 +383,7 @@
     </div>
     <div class="test-button-container">
         <button id="test-game-over" class="test-button">Test Game Over</button>
+        <button id="test-spin" class="test-button">Test Spin</button>
     </div>
     <div class="game-container">
         <div class="game-info">
