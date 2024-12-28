@@ -14,14 +14,14 @@ class Game {
             }
 
             // Set canvas size based on viewport with minimum dimensions
-            this.canvas.width = Math.min(window.innerWidth * 0.9, 450);
+            this.canvas.width = Math.min(window.innerWidth * 0.95, 393);
             // Use mobile height ratio for all devices with minimum height
-            this.canvas.height = Math.max(window.innerHeight * 0.85, 400);
+            this.canvas.height = Math.max(window.innerHeight * 0.92, 400);
             
             // Define zones - set to Cattiva's diameter (radius 40 * 2 = 80)
-            this.selectionZoneHeight = 80;
-            // Ensure minimum play zone height of 320 pixels (400 - 80)
-            this.playZoneHeight = Math.max(this.canvas.height - this.selectionZoneHeight, 320);
+            this.selectionZoneHeight = 70;
+            // Ensure minimum play zone height of 320 pixels (400 - 70)
+            this.playZoneHeight = Math.max(this.canvas.height - this.selectionZoneHeight, 330);
 
             // Get context after setting size
             this.ctx = this.canvas.getContext('2d', {
@@ -106,13 +106,13 @@ class Game {
 
     handleResize() {
         // Update canvas size with minimum dimensions
-        this.canvas.width = Math.min(window.innerWidth * 0.9, 450);
-        this.canvas.height = Math.max(window.innerHeight * 0.85, 400);
+        this.canvas.width = Math.min(window.innerWidth * 0.95, 393);
+        this.canvas.height = Math.max(window.innerHeight * 0.92, 400);
         
         // Update zones - set to Cattiva's diameter (radius 40 * 2 = 80)
-        this.selectionZoneHeight = 80;
-        // Ensure minimum play zone height of 320 pixels (400 - 80)
-        this.playZoneHeight = Math.max(this.canvas.height - this.selectionZoneHeight, 320);
+        this.selectionZoneHeight = 70;
+        // Ensure minimum play zone height of 320 pixels (400 - 70)
+        this.playZoneHeight = Math.max(this.canvas.height - this.selectionZoneHeight, 330);
         
         // Use mobile gravity for consistent physics
         this.engine.world.gravity.y = 1.0;
