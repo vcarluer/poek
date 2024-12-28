@@ -33,6 +33,7 @@ class Game {
 
             this.scoreElement = document.getElementById('score');
             this.nextPalElement = document.getElementById('next-pal');
+            this.gameOverScreen = document.querySelector('.game-over');
 
             // Configure context for better image quality
             this.ctx.imageSmoothingEnabled = true;
@@ -42,13 +43,7 @@ class Game {
             this.ctx.fillStyle = '#34495e';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-            // Initialize Matter.js engine
-            this.engine = Matter.Engine.create();
-            this.world = this.engine.world;
-            
-            // Use mobile gravity for consistent physics
-            this.engine.world.gravity.x = 0;
-            this.engine.world.gravity.y = 1.0;
+            this.initializePhysics();
 
             this.score = 0;
             this.gameOver = false;
@@ -66,18 +61,46 @@ class Game {
             // Create walls for the play zone
             this.createWalls();
 
-            // Setup collision detection
-            Matter.Events.on(this.engine, 'collisionStart', this.handleCollision.bind(this));
-
             // Setup event listeners
             this.setupEventListeners();
 
             // Handle resize
             window.addEventListener('resize', this.handleResize.bind(this));
+
+            // Only show test button in development mode
+            const testButton = document.getElementById('test-game-over');
+            if (testButton) {
+                // Check if we're in development mode via URL parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                const isDev = urlParams.get('dev') === 'true';
+                
+                if (isDev) {
+                    testButton.parentElement.style.display = 'block'; // Show container instead of button
+                    testButton.addEventListener('click', () => {
+                        this.gameOver = true;
+                        this.showGameOverScreen();
+                    });
+                } else {
+                    testButton.parentElement.style.display = 'none';
+                }
+            }
         } catch (error) {
             console.error('Failed to initialize game:', error);
             alert('Failed to initialize game. Please refresh the page.');
         }
+    }
+
+    initializePhysics() {
+        // Initialize Matter.js engine
+        this.engine = Matter.Engine.create();
+        this.world = this.engine.world;
+        
+        // Use mobile gravity for consistent physics
+        this.engine.world.gravity.x = 0;
+        this.engine.world.gravity.y = 1.0;
+
+        // Setup collision detection
+        Matter.Events.on(this.engine, 'collisionStart', this.handleCollision.bind(this));
     }
 
     handleResize() {
@@ -90,8 +113,8 @@ class Game {
         // Ensure minimum play zone height of 320 pixels (400 - 80)
         this.playZoneHeight = Math.max(this.canvas.height - this.selectionZoneHeight, 320);
         
-            // Use mobile gravity for consistent physics
-            this.engine.world.gravity.y = 1.0;
+        // Use mobile gravity for consistent physics
+        this.engine.world.gravity.y = 1.0;
         
         // Recreate walls with new dimensions
         Matter.World.remove(this.world, this.walls);
@@ -441,6 +464,81 @@ class Game {
         });
     }
 
+    showGameOverScreen() {
+        // Take screenshot of the game area
+        const screenshot = this.canvas.toDataURL('image/png');
+        
+        // Update game over screen
+        const gameOverScreen = document.querySelector('.game-over');
+        const scoreDisplay = gameOverScreen.querySelector('.game-over-score');
+        const screenshotImg = gameOverScreen.querySelector('.game-over-screenshot');
+        
+        scoreDisplay.textContent = this.score;
+        screenshotImg.src = screenshot;
+        
+        // Show the game over screen
+        gameOverScreen.classList.add('active');
+        
+        // Setup restart button
+        const restartButton = gameOverScreen.querySelector('.restart-button');
+        restartButton.onclick = () => this.restartGame();
+    }
+
+    restartGame() {
+        // Clean up event listeners first
+        if (this.cleanupListeners) {
+            this.cleanupListeners();
+        }
+
+        // Hide game over screen
+        document.querySelector('.game-over').classList.remove('active');
+        
+        // Reset game state
+        this.score = 0;
+        this.scoreElement.textContent = '0';
+        this.gameOver = false;
+        this.currentPal = null;
+        this.lastDroppedPal = null;
+        this.lastDropTime = 0;
+        this.discoveredPals = new Set(['LAMBALL']);
+        
+        // Clear all pals
+        Array.from(this.pals).forEach(pal => {
+            pal.remove(this.world);
+        });
+        this.pals.clear();
+        
+        // Reset physics engine
+        Matter.World.clear(this.world);
+        Matter.Engine.clear(this.engine);
+        
+        // Reinitialize physics
+        this.initializePhysics();
+        
+        // Recreate walls
+        this.createWalls();
+        
+        // Reset next pal
+        this.nextType = Pal.getRandomInitialType();
+        this.updateNextPal();
+        this.updateEvolutionList();
+
+        // Setup fresh event listeners
+        this.setupEventListeners();
+        
+        // Clear any existing timeouts
+        if (this.dropTimeout) {
+            clearTimeout(this.dropTimeout);
+            this.dropTimeout = null;
+        }
+
+        // Force a clean state
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Restart game loop with fresh state
+        window.requestAnimationFrame(() => this.gameLoop());
+    }
+
     checkGameOver() {
         if (this.gameOver) return;
 
@@ -460,7 +558,7 @@ class Game {
                 palTop > this.selectionZoneHeight && 
                 palBottom < this.selectionZoneHeight + radius) {
                 this.gameOver = true;
-                alert(`Game Over! Score ${this.score}`);
+                this.showGameOverScreen();
                 return;
             }
         }
@@ -469,7 +567,7 @@ class Game {
         const jetragonCount = Array.from(this.pals).filter(p => p.type === 'JETRAGON').length;
         if (jetragonCount > 4) {
             this.gameOver = true;
-            alert(`Game Over! Too many Jetragons (${jetragonCount}/4). Score ${this.score}`);
+            this.showGameOverScreen();
         }
     }
 
@@ -519,11 +617,11 @@ class Game {
     }
 
     gameLoop() {
+        // Always update physics unless game is over
         if (!this.gameOver) {
+            Matter.Engine.update(this.engine);
             requestAnimationFrame(this.gameLoop.bind(this));
         }
-
-        Matter.Engine.update(this.engine);
         
         // Clear canvas with background color
         this.ctx.fillStyle = '#34495e';
@@ -555,13 +653,13 @@ class Game {
         // Draw aiming line if there's a current Pal
         if (this.currentPal) {
             this.ctx.beginPath();
-            this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)'; // Semi-transparent white
+            this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
             this.ctx.lineWidth = 2;
-            this.ctx.setLineDash([5, 5]); // Dashed line
+            this.ctx.setLineDash([5, 5]);
             this.ctx.moveTo(this.currentPal.body.position.x, this.currentPal.body.position.y);
             this.ctx.lineTo(this.currentPal.body.position.x, this.canvas.height);
             this.ctx.stroke();
-            this.ctx.setLineDash([]); // Reset line style
+            this.ctx.setLineDash([]);
             this.ctx.lineWidth = 1;
         }
         
@@ -569,7 +667,7 @@ class Game {
         this.pals.forEach(pal => pal.draw(this.ctx));
 
         // Create initial Pal if none exists
-        if (!this.currentPal && this.pals.size === 0) {
+        if (!this.currentPal && this.pals.size === 0 && !this.gameOver) {
             this.createNewPal();
         }
     }

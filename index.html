@@ -123,12 +123,11 @@
             width: 100%;
             max-width: 450px;
             top: -30px;
-            display: -ms-flexbox;
             display: flex;
-            -ms-flex-pack: justify;
             justify-content: space-between;
+            align-items: center;
             padding: 0 10px;
-            z-index: 2;
+            z-index: 20;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -166,6 +165,33 @@
             object-fit: cover;
             border-radius: 50%;
             object-position: center;
+        }
+        .test-button-container {
+            display: none; /* Hidden by default, shown in dev mode */
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            pointer-events: all;
+        }
+        .test-button {
+            background: #FF4E50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Rubik', sans-serif;
+            transition: transform 0.2s;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 2px 0 #c0392b;
+            pointer-events: all;
+        }
+        .test-button:hover {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #c0392b;
         }
         .evolution-chain {
             display: -ms-flexbox;
@@ -217,11 +243,75 @@
             z-index: 1;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+        .game-over.active {
+            display: flex;
+        }
+        .game-over-content {
+            background: #2c3e50;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+        }
+        .game-over-score {
+            font-family: 'Press Start 2P', Arial, sans-serif;
+            color: #FFD700;
+            font-size: 36px;
+            margin: 20px 0;
+            text-shadow: 
+                2px 0 0 #000,
+                -2px 0 0 #000,
+                0 2px 0 #000,
+                0 -2px 0 #000;
+        }
+        .game-over-screenshot {
+            max-width: 100%;
+            border: 2px solid #ecf0f1;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .restart-button {
+            background: #FF4E50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Rubik', sans-serif;
+            transition: transform 0.2s;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #c0392b;
+        }
+        .restart-button:hover {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #c0392b;
+        }
     </style>
 </head>
 <body>
     <div class="title-container">
         <h1 class="game-title">PALMERGE</h1>
+    </div>
+    <div class="test-button-container">
+        <button id="test-game-over" class="test-button">Test Game Over</button>
     </div>
     <div class="game-container">
         <div class="game-info">
@@ -232,19 +322,28 @@
         <canvas id="game-canvas"></canvas>
         <div class="evolution-container">
             <div class="evolution-chain">
-            <div class="pal-circle"></div>
-            <div class="pal-circle"></div>
-            <div class="pal-circle"></div>
-            <div class="pal-circle"></div>
-            <div class="pal-circle"></div>
-            <div class="pal-circle"></div>
-            <div class="pal-circle"></div>
-            <div class="pal-circle"></div>
-            <div class="pal-circle"></div>
-            <div class="pal-circle"></div>
-            <div class="pal-circle"></div>
-            <div class="pal-circle"></div>
+                <div class="pal-circle"></div>
+                <div class="pal-circle"></div>
+                <div class="pal-circle"></div>
+                <div class="pal-circle"></div>
+                <div class="pal-circle"></div>
+                <div class="pal-circle"></div>
+                <div class="pal-circle"></div>
+                <div class="pal-circle"></div>
+                <div class="pal-circle"></div>
+                <div class="pal-circle"></div>
+                <div class="pal-circle"></div>
+                <div class="pal-circle"></div>
             </div>
+        </div>
+    </div>
+
+    <div class="game-over">
+        <div class="game-over-content">
+            <h2 class="game-title" style="font-size: 32px; margin-bottom: 20px;">Game Over!</h2>
+            <div class="game-over-score"></div>
+            <img class="game-over-screenshot" alt="Game Screenshot">
+            <button class="restart-button">Play Again</button>
         </div>
     </div>
 
