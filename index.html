@@ -105,8 +105,17 @@
             width: 100%;
         }
         @keyframes float {
-            0%, 100% { transform: translate(-50%, 0) rotate(0deg); }
-            50% { transform: translate(-50%, -15px) rotate(0deg); }
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, -15px); }
+        }
+
+        @keyframes spin {
+            from { transform: translate(-50%, 0) rotate(0deg); }
+            to { transform: translate(-50%, 0) rotate(360deg); }
+        }
+
+        .spin {
+            animation: spin 0.5s ease-in-out !important;
         }
         .decorative-pal {
             position: absolute;

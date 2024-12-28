@@ -122,18 +122,12 @@ export class UIManager {
             if (!this.jetragonImage) return;
         }
 
-        // Pause float animation
-        this.jetragonImage.style.animation = 'none';
+        // Add spin class to trigger animation
+        this.jetragonImage.classList.add('spin');
 
-        // Add rotation animation
-        this.jetragonImage.style.transition = 'transform 0.5s ease-in-out';
-        this.jetragonImage.style.transform = 'translate(-50%, 0) rotate(360deg)';
-
-        // Reset after animation
+        // Remove spin class and restore float animation after completion
         setTimeout(() => {
-            this.jetragonImage.style.transition = '';
-            this.jetragonImage.style.transform = '';
-            this.jetragonImage.style.animation = 'float 3s ease-in-out infinite';
+            this.jetragonImage.classList.remove('spin');
             if (onComplete) onComplete();
         }, 500);
     }
