@@ -15,9 +15,31 @@ class Pal {
     };
 
     static getRandomInitialType() {
-        // Only return one of the first four Pal types for initial drops
-        const initialTypes = ['LAMBALL', 'CHIKIPI', 'FOXPARKS', 'PENGULLET'];
-        return initialTypes[Math.floor(Math.random() * initialTypes.length)];
+        // Only return one of the first five Pal types for initial drops with weighted probabilities
+        const initialTypes = ['LAMBALL', 'CHIKIPI', 'FOXPARKS', 'PENGULLET', 'CATTIVA'];
+        
+        // Calculate weights based on inverse of radius (smaller radius = higher probability)
+        const weights = initialTypes.map(type => {
+            const radius = Pal.TYPES[type].radius;
+            return 1 / radius; // Inverse relationship: larger radius = smaller weight
+        });
+        
+        // Calculate total weight for normalization
+        const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+        
+        // Generate a random value between 0 and total weight
+        let random = Math.random() * totalWeight;
+        
+        // Select PAL based on weighted probability
+        for (let i = 0; i < initialTypes.length; i++) {
+            random -= weights[i];
+            if (random <= 0) {
+                return initialTypes[i];
+            }
+        }
+        
+        // Fallback (should never reach here due to math, but just in case)
+        return initialTypes[0];
     }
 
     static loadImages() {
