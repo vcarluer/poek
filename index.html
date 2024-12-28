@@ -19,36 +19,56 @@
             -ms-user-select: none;
         }
         @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@700&display=swap');
+        .title-container {
+            min-height: 120px;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-align: center;
+            align-items: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            width: 100%;
+            position: fixed;
+            top: 80px;
+            left: 0;
+            right: 0;
+            z-index: 10;
+        }
         .game-title {
             font-family: 'Rubik', sans-serif;
-            color: #4169E1;
+            color: #FF4E50;
             font-size: 48px;
             text-align: center;
-            margin-bottom: 20px;
+            margin: 0;
             position: relative;
             z-index: 2;
-        }
-        .game-title img {
-            width: 40px;
-            height: 40px;
-            vertical-align: middle;
-            margin-left: 10px;
-            object-fit: cover;
-            border-radius: 50%;
+            text-shadow: 
+                3px 3px 0 #000,
+                -3px -3px 0 #000,
+                3px -3px 0 #000,
+                -3px 3px 0 #000,
+                0 0 10px rgba(255, 78, 80, 0.8),
+                0 0 20px rgba(255, 78, 80, 0.5);
+            letter-spacing: 2px;
+            transform: skew(-5deg);
+            -ms-transform: skew(-5deg);
         }
         body {
+            display: -ms-flexbox;
             display: flex;
+            -ms-flex-direction: column;
             flex-direction: column;
+            -ms-flex-align: center;
             align-items: center;
-            justify-content: center;
             min-height: 100vh;
             background-color: #2c3e50;
             touch-action: none;
             overflow: hidden;
+            padding-top: 200px;
         }
         .game-container {
             position: relative;
-            margin: 60px auto;
+            margin: 0 auto;
             padding: 20px;
         }
         #game-canvas {
@@ -110,7 +130,9 @@
             position: absolute;
             width: 100%;
             top: -40px;
+            display: -ms-flexbox;
             display: flex;
+            -ms-flex-pack: justify;
             justify-content: space-between;
             padding: 0 20px 0 10px;
             z-index: 2;
@@ -121,7 +143,9 @@
             font-family: Arial, sans-serif;
         }
         #next-pal {
+            display: -ms-flexbox;
             display: flex;
+            -ms-flex-align: center;
             align-items: center;
             gap: 10px;
             color: #ecf0f1;
@@ -136,8 +160,11 @@
             object-position: center;
         }
         .evolution-chain {
+            display: -ms-flexbox;
             display: flex;
+            -ms-flex-align: center;
             align-items: center;
+            -ms-flex-pack: center;
             justify-content: center;
             gap: 12px;
             margin-top: 15px;
@@ -156,8 +183,11 @@
             height: 35px;
             border-radius: 50%;
             background-color: #2c3e50;
+            display: -ms-flexbox;
             display: flex;
+            -ms-flex-align: center;
             align-items: center;
+            -ms-flex-pack: center;
             justify-content: center;
             overflow: hidden;
         }
@@ -170,7 +200,9 @@
     </style>
 </head>
 <body>
-    <h1 class="game-title">PALMERGE<img src="assets/lamball.png" alt="Lamball"></h1>
+    <div class="title-container">
+        <h1 class="game-title">PALMERGE</h1>
+    </div>
     <div class="game-container">
         <div class="game-info">
             <div id="score">0</div>
