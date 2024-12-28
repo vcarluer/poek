@@ -122,12 +122,20 @@ export class UIManager {
             if (!this.jetragonImage) return;
         }
 
-        // Add spin class to trigger animation
+        // Get current Y position
+        const rect = this.jetragonImage.getBoundingClientRect();
+        const currentY = rect.top;
+
+        // Set current Y position as CSS variable
+        this.jetragonImage.style.setProperty('--current-y', `${currentY}px`);
+
+        // Add spin class
         this.jetragonImage.classList.add('spin');
 
-        // Remove spin class and restore float animation after completion
+        // Reset after animation
         setTimeout(() => {
             this.jetragonImage.classList.remove('spin');
+            this.jetragonImage.style.removeProperty('--current-y');
             if (onComplete) onComplete();
         }, 500);
     }

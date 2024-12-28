@@ -110,21 +110,10 @@
         }
 
         @keyframes spin {
-            from { transform: translate(-50%, 0) rotate(0deg); }
-            to { transform: translate(-50%, 0) rotate(360deg); }
+            0% { transform: translate(-50%, var(--y, 0)) rotate(0deg); }
+            100% { transform: translate(-50%, var(--y, 0)) rotate(360deg); }
         }
 
-        .spin {
-            animation: spin 0.5s ease-in-out !important;
-        }
-        .decorative-pal {
-            position: absolute;
-            z-index: 0;
-            pointer-events: none;
-            object-fit: cover;
-            object-position: center;
-            border-radius: 50%;
-        }
         #jetragon {
             position: fixed;
             top: 0;
@@ -133,6 +122,19 @@
             height: clamp(120px, 35vw, 160px);
             animation: float 3s ease-in-out infinite;
             transform-origin: center;
+        }
+
+        #jetragon.spin {
+            --y: var(--current-y, 0);
+            animation: spin 0.5s ease-in-out forwards !important;
+        }
+        .decorative-pal {
+            position: absolute;
+            z-index: 0;
+            pointer-events: none;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 50%;
         }
         .game-info {
             position: absolute;
