@@ -92,8 +92,8 @@ class Pal {
         
         // Create the Matter.js body
         this.body = Matter.Bodies.circle(x, y, radius, {
-            restitution: 0.7,
-            friction: 0.05,
+            restitution: 0.3,
+            friction: 0.2,
             density: 0.002,
             label: type
         });
