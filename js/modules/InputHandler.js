@@ -11,8 +11,8 @@ export class InputHandler {
 
     setupEventListeners() {
         // Mouse/touch start handler
-        const startHandler = async (e) => {
-            if (this.callbacks.isGameOver() || this.isProcessingAction) return;
+        const startHandler = (e) => {
+            if (this.callbacks.isGameOver()) return;
             
             e.preventDefault();
             e.stopPropagation();
@@ -22,20 +22,11 @@ export class InputHandler {
             this.currentX = clientX - rect.left;
             
             if (!this.callbacks.getCurrentPal()) {
-                this.isProcessingAction = true;
-                
                 const timeSinceLastDrop = Date.now() - this.callbacks.getLastDropTime();
-                const canCreateNew = this.callbacks.canCreateNewPal() && 
-                                   timeSinceLastDrop >= this.callbacks.getMinDropDelay();
-                
-                if (canCreateNew) {
-                    await new Promise(resolve => setTimeout(resolve, 25));
+                if (timeSinceLastDrop >= this.callbacks.getMinDropDelay() && 
+                    this.callbacks.canCreateNewPal()) {
                     this.callbacks.createNewPal();
                 }
-                
-                setTimeout(() => {
-                    this.isProcessingAction = false;
-                }, this.callbacks.getMinDropDelay());
             }
         };
 
@@ -77,35 +68,12 @@ export class InputHandler {
                 this.currentX = clientX - rect.left;
             }
 
-            if (this.callbacks.getCurrentPal() && !this.isProcessingAction) {
-                this.isProcessingAction = true;
+            if (this.callbacks.getCurrentPal()) {
                 this.callbacks.dropCurrentPal(this.currentX);
                 
                 if (this.callbacks.getDropTimeout()) {
                     clearTimeout(this.callbacks.getDropTimeout());
                 }
-
-                const newTimeout = setTimeout(() => {
-                    const checkAndCreate = () => {
-                        if (this.callbacks.isGameOver() || this.callbacks.getCurrentPal()) {
-                            this.isProcessingAction = false;
-                            return;
-                        }
-                        
-                        const timeSinceLastDrop = Date.now() - this.callbacks.getLastDropTime();
-                        if (this.callbacks.canCreateNewPal() && 
-                            timeSinceLastDrop >= this.callbacks.getMinDropDelay()) {
-                            this.callbacks.createNewPal();
-                            this.isProcessingAction = false;
-                        } else {
-                            setTimeout(checkAndCreate, 100);
-                        }
-                    };
-                    
-                    checkAndCreate();
-                }, this.callbacks.getMinDropDelay());
-
-                this.callbacks.setDropTimeout(newTimeout);
             }
         };
 

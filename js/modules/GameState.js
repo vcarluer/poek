@@ -1,7 +1,8 @@
 import { Pal } from '../pal.js';
 
 export class GameState {
-    constructor() {
+    constructor(selectionZoneHeight) {
+        this.selectionZoneHeight = selectionZoneHeight;
         this.reset();
         this.highScore = parseInt(localStorage.getItem('highScore')) || 0;
         this.minDropDelay = 300; // Minimum 0.3 second between drops
@@ -19,6 +20,11 @@ export class GameState {
         this.pals = new Set();
         this.nextType = null;
         this.smokeEffects = [];
+        this.images = null;
+    }
+
+    setImages(images) {
+        this.images = images;
     }
 
     updateScore(points) {
@@ -37,7 +43,8 @@ export class GameState {
         const radius = this.getPalRadius(palType);
         const palTop = this.lastDroppedPal.body.position.y - radius;
         
-        return palTop > (this.selectionZoneHeight + radius + 20);
+        // Check if the last dropped Pal has moved below the selection zone
+        return palTop > this.selectionZoneHeight;
     }
 
     checkGameOver(selectionZoneHeight) {
@@ -45,28 +52,46 @@ export class GameState {
 
         // Check if any non-static Pal touches top of play zone
         for (const pal of Array.from(this.pals)) {
-            if (!pal.body || !this.pals.has(pal)) continue;
+            if (!pal.body || !this.pals.has(pal) || pal.isProcessing) continue;
             
             const radius = this.getPalRadius(pal.type);
             const palTop = pal.body.position.y - radius;
             const palBottom = pal.body.position.y + radius;
             
+            // Check if Pal is in the selection zone and not static
             if (!pal.body.isStatic && 
-                palTop > selectionZoneHeight && 
-                palBottom < selectionZoneHeight + radius) {
+                palTop <= selectionZoneHeight + radius && 
+                palBottom >= selectionZoneHeight - radius) {
                 this.gameOver = true;
                 return true;
             }
         }
         
         // Check for too many Jetragons
-        const jetragonCount = Array.from(this.pals).filter(p => p.type === 'JETRAGON').length;
+        const jetragonCount = Array.from(this.pals)
+            .filter(p => p.type === 'JETRAGON' && !p.isProcessing)
+            .length;
         if (jetragonCount > 4) {
             this.gameOver = true;
             return true;
         }
 
         return false;
+    }
+
+    removePal(pal) {
+        if (!pal) return;
+        
+        // Clear any references
+        if (this.currentPal === pal) {
+            this.currentPal = null;
+        }
+        if (this.lastDroppedPal === pal) {
+            this.lastDroppedPal = null;
+        }
+        
+        // Remove from set
+        this.pals.delete(pal);
     }
 
     getPalRadius(type) {

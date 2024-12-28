@@ -1,6 +1,4 @@
-const { Bodies, World } = window.Matter;
-
-class Pal {
+export class Pal {
     static TYPES = {
         LAMBALL: { radius: 10, score: 2, next: 'CHIKIPI', image: 'assets/lamball.png', color: '#F8E8E8' },
         CHIKIPI: { radius: 15, score: 4, next: 'FOXPARKS', image: 'assets/chikipi.png', color: '#FFE5B4' },
@@ -89,15 +87,23 @@ class Pal {
     }
 
     constructor(x, y, type, world, images) {
+        if (!window.Matter) {
+            throw new Error('Matter.js not loaded');
+        }
+        
+        const { Bodies, World } = window.Matter;
+        
         this.type = type;
         const { radius } = Pal.TYPES[type];
         
-        // Create the Matter.js body
+        // Create the Matter.js body with adjusted physics properties
         this.body = Bodies.circle(x, y, radius, {
-            restitution: 0.3,
-            friction: 0.2,
-            density: 0.002,
-            label: type
+            restitution: 0.2,
+            friction: 0.5,
+            density: 0.001,
+            label: type,
+            slop: 0.05, // Reduce jittering
+            inertia: Infinity // Prevent rotation
         });
 
         // Add the body to the world
@@ -164,8 +170,10 @@ class Pal {
     }
 
     remove(world) {
+        if (!window.Matter) {
+            throw new Error('Matter.js not loaded');
+        }
+        const { World } = window.Matter;
         World.remove(world, this.body);
     }
 }
-
-export { Pal };

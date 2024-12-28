@@ -19,70 +19,89 @@ export class CollisionManager {
                 // Skip if either body is a wall
                 if (this.physicsEngine.getWalls().some(wall => wall === bodyA || wall === bodyB)) return;
 
+                // Find the Pals involved in the collision
                 const palA = Array.from(this.gameState.getPals()).find(p => p.body === bodyA);
                 const palB = Array.from(this.gameState.getPals()).find(p => p.body === bodyB);
 
+                // Skip if either Pal is not found or is already being processed
+                if (!palA || !palB || palA.isProcessing || palB.isProcessing) return;
+
                 // Skip collision if either Pal is static (in drop zone)
-                if (palA && palB && palA.type === palB.type && 
-                    !palA.body.isStatic && !palB.body.isStatic) {
-                    this.handlePalMerge(palA, palB);
+                if (palA.type === palB.type && !palA.body.isStatic && !palB.body.isStatic) {
+                    // Mark Pals as being processed to prevent duplicate merges
+                    palA.isProcessing = true;
+                    palB.isProcessing = true;
+
+                    // Use requestAnimationFrame to ensure proper timing
+                    requestAnimationFrame(() => {
+                        this.handlePalMerge(palA, palB);
+                    });
                 }
             });
         });
     }
 
     handlePalMerge(palA, palB) {
-        const nextType = Pal.TYPES[palA.type].next;
-        
-        if (nextType) {
-            // Remove collided Pals
-            palA.remove(this.physicsEngine.world);
-            palB.remove(this.physicsEngine.world);
-            this.gameState.removePal(palA);
-            this.gameState.removePal(palB);
+        try {
+            const nextType = Pal.TYPES[palA.type].next;
+            
+            if (nextType) {
+                // Calculate merge position
+                const midX = (palA.body.position.x + palB.body.position.x) / 2;
+                const midY = (palA.body.position.y + palB.body.position.y) / 2;
 
-            // Create smoke effect at merge point
-            const midX = (palA.body.position.x + palB.body.position.x) / 2;
-            const midY = (palA.body.position.y + palB.body.position.y) / 2;
-            const smokeEffect = new Smoke(midX, midY, Pal.TYPES[palA.type].radius);
-            
-            // Update smoke effects
-            const currentEffects = this.gameState.getSmokeEffects();
-            this.gameState.setSmokeEffects([...currentEffects, smokeEffect]);
-            
-            // Create new fused Pal
-            const fusedPal = new Pal(
-                midX,
-                midY,
-                nextType,
-                this.physicsEngine.world,
-                this.gameState.images
-            );
-            
-            this.gameState.addPal(fusedPal);
+                // Create smoke effect
+                const smokeEffect = new Smoke(midX, midY, Pal.TYPES[palA.type].radius);
+                const currentEffects = this.gameState.getSmokeEffects();
+                this.gameState.setSmokeEffects([...currentEffects, smokeEffect]);
 
-            // Update score
-            const newScore = this.gameState.updateScore(Pal.TYPES[nextType].score);
-            this.uiManager.updateScore(newScore);
-            
-            // Update discovered Pals and evolution list
-            this.gameState.getDiscoveredPals().add(nextType);
-            this.uiManager.updateEvolutionList(
-                this.gameState.getDiscoveredPals(),
-                Pal.TYPES
-            );
+                // Create new fused Pal before removing old ones
+                const fusedPal = new Pal(
+                    midX,
+                    midY,
+                    nextType,
+                    this.physicsEngine.world,
+                    this.gameState.images
+                );
 
-            // Check for game over after fusion
-            setTimeout(() => {
-                if (this.gameState.checkGameOver(this.gameState.selectionZoneHeight)) {
-                    const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
-                    this.uiManager.showGameOverScreen(
-                        this.gameState.getScore(),
-                        this.gameState.getHighScore(),
-                        screenshot
-                    );
-                }
-            }, 0);
+                // Add new Pal first
+                this.gameState.addPal(fusedPal);
+
+                // Then remove old Pals
+                palA.remove(this.physicsEngine.world);
+                palB.remove(this.physicsEngine.world);
+                this.gameState.removePal(palA);
+                this.gameState.removePal(palB);
+
+                // Update score and UI
+                const newScore = this.gameState.updateScore(Pal.TYPES[nextType].score);
+                this.uiManager.updateScore(newScore);
+                
+                // Update discovered Pals and evolution list
+                this.gameState.getDiscoveredPals().add(nextType);
+                this.uiManager.updateEvolutionList(
+                    this.gameState.getDiscoveredPals(),
+                    Pal.TYPES
+                );
+
+                // Check for game over after fusion
+                requestAnimationFrame(() => {
+                    if (this.gameState.checkGameOver(this.gameState.selectionZoneHeight)) {
+                        const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
+                        this.uiManager.showGameOverScreen(
+                            this.gameState.getScore(),
+                            this.gameState.getHighScore(),
+                            screenshot
+                        );
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error in handlePalMerge:', error);
+        } finally {
+            // Clear processing flags
+            if (palA) palA.isProcessing = false;
+            if (palB) palB.isProcessing = false;
         }
     }
 }

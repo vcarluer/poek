@@ -79,4 +79,23 @@ export class GameRenderer {
     takeScreenshot() {
         return this.canvas.toDataURL('image/png');
     }
+
+    reset() {
+        // Reset canvas state
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        this.ctx.imageSmoothingEnabled = true;
+        this.ctx.imageSmoothingQuality = 'high';
+        this.clearCanvas();
+    }
+
+    cleanup() {
+        // Clear canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Reset canvas state
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        
+        // Clear references
+        this.ctx = null;
+    }
 }

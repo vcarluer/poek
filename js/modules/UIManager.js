@@ -86,19 +86,48 @@ export class UIManager {
     }
 
     setupTestButton(isDev, callback) {
-        const testButton = document.getElementById('test-game-over');
-        if (testButton) {
+        this.testButton = document.getElementById('test-game-over');
+        if (this.testButton) {
             if (isDev) {
-                testButton.parentElement.style.display = 'block';
-                testButton.addEventListener('click', callback);
+                this.testButton.parentElement.style.display = 'block';
+                this.testButtonCallback = callback;
+                this.testButton.addEventListener('click', this.testButtonCallback);
             } else {
-                testButton.parentElement.style.display = 'none';
+                this.testButton.parentElement.style.display = 'none';
             }
         }
     }
 
     setupRestartButton(callback) {
-        const restartButton = this.gameOverScreen.querySelector('.restart-button');
-        restartButton.onclick = callback;
+        this.restartButton = this.gameOverScreen.querySelector('.restart-button');
+        this.restartButtonCallback = callback;
+        this.restartButton.addEventListener('click', this.restartButtonCallback);
+    }
+
+    cleanup() {
+        // Remove event listeners
+        if (this.testButton && this.testButtonCallback) {
+            this.testButton.removeEventListener('click', this.testButtonCallback);
+        }
+        if (this.restartButton && this.restartButtonCallback) {
+            this.restartButton.removeEventListener('click', this.restartButtonCallback);
+        }
+
+        // Reset UI state
+        this.hideGameOverScreen();
+        if (this.scoreElement) {
+            this.scoreElement.textContent = '0';
+        }
+        if (this.nextPalElement) {
+            const nextImg = this.nextPalElement.querySelector('img');
+            if (nextImg) {
+                nextImg.src = '';
+                nextImg.alt = '';
+            }
+        }
+
+        // Clear references
+        this.testButtonCallback = null;
+        this.restartButtonCallback = null;
     }
 }
