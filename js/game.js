@@ -3,22 +3,22 @@ class Game {
         try {
             this.dropTimeout = null;
             this.lastDroppedPal = null;
-            this.minDropDelay = 500; // Minimum 0.5 second between drops
+            this.minDropDelay = 300; // Minimum 0.3 second between drops
             this.lastDropTime = 0; // Track when the last Pal was dropped
+            this.safetyMargin = 100; // Pixels of extra clearance needed before next drop
             this.discoveredPals = new Set(['LAMBALL']); // Start with LAMBALL discovered
             this.canvas = document.getElementById('game-canvas');
             if (!this.canvas) {
                 throw new Error('Canvas element not found');
             }
 
-            // Set canvas size based on viewport
-            this.canvas.width = Math.min(window.innerWidth * 0.9, 450); // Reduced max width for better mobile ratio
-            // Adjust canvas height based on screen size - taller on mobile
-            const isMobile = window.innerWidth <= 768;
-            this.canvas.height = window.innerHeight * (isMobile ? 0.85 : 0.6);
+            // Set canvas size based on viewport - using mobile ratio for consistency
+            this.canvas.width = Math.min(window.innerWidth * 0.9, 450);
+            // Use mobile height ratio for all devices
+            this.canvas.height = window.innerHeight * 0.85;
             
-            // Define zones - smaller selection zone on mobile
-            this.selectionZoneHeight = Math.min(window.innerHeight * (isMobile ? 0.12 : 0.15), 100); // 12% on mobile, 15% on desktop
+            // Define zones - set to Cattiva's diameter (radius 40 * 2 = 80)
+            this.selectionZoneHeight = 80;
             this.playZoneHeight = this.canvas.height - this.selectionZoneHeight;
 
             // Get context after setting size
@@ -45,9 +45,9 @@ class Game {
             this.engine = Matter.Engine.create();
             this.world = this.engine.world;
             
-            // Adjust gravity based on screen size
+            // Use mobile gravity for consistent physics
             this.engine.world.gravity.x = 0;
-            this.engine.world.gravity.y = isMobile ? 0.6 : 0.8; // Lower gravity on mobile for better control
+            this.engine.world.gravity.y = 1.0;
 
             this.score = 0;
             this.gameOver = false;
@@ -80,17 +80,16 @@ class Game {
     }
 
     handleResize() {
-        // Update canvas size
+        // Update canvas size - using mobile ratio for consistency
         this.canvas.width = Math.min(window.innerWidth * 0.9, 450);
-        const isMobile = window.innerWidth <= 768;
-        this.canvas.height = window.innerHeight * (isMobile ? 0.85 : 0.6);
+        this.canvas.height = window.innerHeight * 0.85;
         
-        // Update zones
-        this.selectionZoneHeight = Math.min(window.innerHeight * (isMobile ? 0.12 : 0.15), 100);
+        // Update zones - set to Cattiva's diameter (radius 40 * 2 = 80)
+        this.selectionZoneHeight = 80;
         this.playZoneHeight = this.canvas.height - this.selectionZoneHeight;
         
-        // Update gravity
-        this.engine.world.gravity.y = isMobile ? 0.6 : 0.8;
+            // Use mobile gravity for consistent physics
+            this.engine.world.gravity.y = 1.0;
         
         // Recreate walls with new dimensions
         Matter.World.remove(this.world, this.walls);
@@ -177,10 +176,7 @@ class Game {
                 
                 // Check if we can create a new Pal
                 const timeSinceLastDrop = Date.now() - this.lastDropTime;
-                const canCreateNew = (!this.lastDroppedPal || 
-                    this.lastDroppedPal.body.position.y > 
-                    Pal.TYPES[this.lastDroppedPal.type].radius * 5) && 
-                    timeSinceLastDrop >= this.minDropDelay;
+                const canCreateNew = this.canCreateNewPal() && timeSinceLastDrop >= this.minDropDelay;
                 
                 if (canCreateNew) {
                     await new Promise(resolve => setTimeout(resolve, 25)); // Small delay for better control
@@ -294,10 +290,7 @@ class Game {
                         }
                         
                         const timeSinceLastDrop = Date.now() - this.lastDropTime;
-                        if ((!this.lastDroppedPal || 
-                            this.lastDroppedPal.body.position.y > 
-                            Pal.TYPES[this.lastDroppedPal.type].radius * 5) && 
-                            timeSinceLastDrop >= this.minDropDelay) {
+                        if (this.canCreateNewPal() && timeSinceLastDrop >= this.minDropDelay) {
                             this.createNewPal();
                             isProcessingAction = false;
                         } else {
@@ -345,6 +338,17 @@ class Game {
         };
     }
 
+    canCreateNewPal() {
+        if (!this.lastDroppedPal) return true;
+        
+        const palType = this.lastDroppedPal.type;
+        const radius = Pal.TYPES[palType].radius;
+        const palBottom = this.lastDroppedPal.body.position.y + radius;
+        
+        // Check if the last dropped Pal is fully in the play zone plus safety margin
+        return palBottom < (this.canvas.height - this.safetyMargin);
+    }
+
     createNewPal() {
         if (this.gameOver || this.currentPal) return;
 
@@ -354,7 +358,7 @@ class Game {
         // Create new Pal in selection zone
         const pal = new Pal(
             this.canvas.width / 2,
-            radius + 10, // Add padding from the top
+            this.selectionZoneHeight - radius, // Position Pal at bottom of selection zone
             type,
             this.world,
             this.images
