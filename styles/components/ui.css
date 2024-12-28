@@ -1,0 +1,56 @@
+.test-button-container {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
+    pointer-events: all;
+    gap: 10px;
+}
+
+.test-button {
+    background: #FF4E50;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Rubik', sans-serif;
+    transition: transform 0.2s;
+    text-transform: uppercase;
+    font-weight: bold;
+    box-shadow: 0 2px 0 #c0392b;
+    pointer-events: all;
+}
+
+.test-button:hover {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #c0392b;
+}
+
+/* Common button styles */
+.button {
+    background: #FF4E50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Rubik', sans-serif;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-transform: uppercase;
+    font-weight: bold;
+    box-shadow: 0 3px 0 #c0392b;
+}
+
+.button:hover {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #c0392b;
+}
+
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

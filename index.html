@@ -8,392 +8,41 @@
     <meta http-equiv="Expires" content="0">
     <title>Pal Fusion Game</title>
     <link rel="icon" type="image/png" href="assets/jetragon.png">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
-        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@700&family=Press+Start+2P&display=swap');
-        .title-container {
-            min-height: 60px;
-            display: -ms-flexbox;
-            display: flex;
-            -ms-flex-align: center;
-            align-items: center;
-            -ms-flex-pack: center;
-            justify-content: center;
-            width: 100%;
-            position: fixed;
-            top: 5px;
-            left: 0;
-            right: 0;
-            z-index: 10;
-        }
-        .game-title {
-            font-family: 'Rubik', sans-serif;
-            color: #FF4E50;
-            font-size: clamp(28px, 7vw, 36px);
-            text-align: center;
-            margin: 0;
-            position: relative;
-            z-index: 2;
-            text-shadow: 
-                3px 3px 0 #000,
-                -3px -3px 0 #000,
-                3px -3px 0 #000,
-                -3px 3px 0 #000,
-                0 0 10px rgba(255, 78, 80, 0.8),
-                0 0 20px rgba(255, 78, 80, 0.5);
-            letter-spacing: 2px;
-            transform: skew(-5deg);
-            -ms-transform: skew(-5deg);
-        }
-        body {
-            display: -ms-flexbox;
-            display: flex;
-            -ms-flex-direction: column;
-            flex-direction: column;
-            -ms-flex-align: center;
-            align-items: center;
-            background-color: #2c3e50;
-            touch-action: none;
-            padding-top: 150px;
-            padding-bottom: env(safe-area-inset-bottom);
-            min-height: 100dvh;
-            height: 100%;
-            overflow-y: auto;
-        }
-        .game-container {
-            position: relative;
-            margin: 0 auto;
-            padding: 5px;
-            width: 100%;
-            max-width: 393px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: calc(100dvh - 70px - env(safe-area-inset-bottom) - 60px);
-        }
-        
-        .evolution-container {
-            position: relative;
-            width: 100%;
-            max-width: 393px;
-            margin: 0 auto;
-            padding: 0 5px 10px;
-            margin-top: auto;
-            background: #2c3e50;
-        }
-        #game-canvas {
-            background-color: #34495e;
-            border: 2px solid #ecf0f1;
-            touch-action: none;
-            display: block;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: pixelated;
-            width: 100%;
-        }
-        @keyframes float {
-            0%, 100% { transform: translate(-50%, 0); }
-            50% { transform: translate(-50%, -15px); }
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .jetragon-wrapper {
-            position: fixed;
-            top: 10px;
-            left: calc(50% - 10px);
-            transform: translateX(-50%);
-            animation: float 3s ease-in-out infinite;
-            width: clamp(120px, 35vw, 160px);
-            height: clamp(120px, 35vw, 160px);
-            z-index: 0;
-        }
-
-        #jetragon {
-            width: 100%;
-            height: 100%;
-            transform-origin: center;
-            object-fit: cover;
-            object-position: center;
-            border-radius: 50%;
-        }
-
-        #jetragon.spin {
-            animation: spin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .decorative-pal {
-            position: absolute;
-            z-index: 0;
-            pointer-events: none;
-            object-fit: cover;
-            object-position: center;
-            border-radius: 50%;
-        }
-        .game-info {
-            position: absolute;
-            width: 100%;
-            max-width: 393px;
-            top: -20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 10px;
-            z-index: 20;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        #score {
-            font-size: clamp(24px, 6vw, 32px);
-            font-family: 'Press Start 2P', Arial, sans-serif;
-            color: #FFD700;
-            text-shadow: 
-                4px 0 0 #000,
-                -4px 0 0 #000,
-                0 4px 0 #000,
-                0 -4px 0 #000,
-                2px 2px 0 #000,
-                -2px -2px 0 #000,
-                2px -2px 0 #000,
-                -2px 2px 0 #000;
-            padding: 8px;
-            image-rendering: pixelated;
-            line-height: 1.2;
-            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.7));
-        }
-        #next-pal {
-            display: -ms-flexbox;
-            display: flex;
-            -ms-flex-align: center;
-            align-items: center;
-            gap: 10px;
-            color: #ecf0f1;
-            font-size: 16px;
-            font-family: Arial, sans-serif;
-        }
-        #next-pal img {
-            width: clamp(45px, 13vw, 70px);
-            height: clamp(45px, 13vw, 70px);
-            object-fit: cover;
-            border-radius: 50%;
-            object-position: center;
-        }
-        .test-button-container {
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1001;
-            pointer-events: all;
-            gap: 10px;
-        }
-        .test-button {
-            background: #FF4E50;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            font-size: 14px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-family: 'Rubik', sans-serif;
-            transition: transform 0.2s;
-            text-transform: uppercase;
-            font-weight: bold;
-            box-shadow: 0 2px 0 #c0392b;
-            pointer-events: all;
-        }
-        .test-button:hover {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 #c0392b;
-        }
-        .evolution-chain {
-            display: -ms-flexbox;
-            display: flex;
-            -ms-flex-align: center;
-            align-items: center;
-            -ms-flex-pack: center;
-            justify-content: center;
-            gap: 2px;
-            margin: 5px auto;
-            background: rgba(44, 62, 80, 0.8);
-            border-radius: 20px;
-            position: relative;
-            z-index: 2;
-            padding: 6px 4px;
-        }
-        .evolution-chain::-webkit-scrollbar {
-            display: none;
-        }
-        .pal-circle {
-            width: 28px;
-            height: 28px;
-            flex: 0 0 auto;
-            border-radius: 50%;
-            display: -ms-flexbox;
-            display: flex;
-            -ms-flex-align: center;
-            align-items: center;
-            -ms-flex-pack: center;
-            justify-content: center;
-            overflow: hidden;
-            margin: 0 1px;
-            position: relative;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            border: 2px solid #2c3e50;
-        }
-        .pal-circle img {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            height: 90%;
-            object-fit: contain;
-            z-index: 1;
-        }
-        .pal-circle span {
-            position: relative;
-            z-index: 1;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-        .game-over {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: flex-start;
-            align-items: center;
-            z-index: 1000;
-            flex-direction: column;
-            gap: 10px;
-            padding: 10px;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        .game-over.active {
-            display: flex;
-        }
-        .game-over-content {
-            background: #2c3e50;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            max-width: 90%;
-            width: 400px;
-            margin: 10px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .game-over-score {
-            font-family: 'Press Start 2P', Arial, sans-serif;
-            color: #FFD700;
-            font-size: 32px;
-            margin: 5px 0;
-            text-shadow: 
-                2px 0 0 #000,
-                -2px 0 0 #000,
-                0 2px 0 #000,
-                0 -2px 0 #000;
-        }
-
-        .high-score-container {
-            margin-bottom: 10px;
-            font-family: 'Press Start 2P', Arial, sans-serif;
-        }
-
-        .current-high-score {
-            color: #ecf0f1;
-            font-size: 16px;
-            margin-bottom: 5px;
-        }
-
-        .new-high-score {
-            display: none;
-            color: #FFD700;
-            font-size: 24px;
-            animation: glow 1s ease-in-out infinite alternate;
-            text-shadow: 0 0 10px #FFD700;
-            margin: 10px 0;
-        }
-
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 5px #FFD700, 0 0 10px #FFD700, 0 0 15px #e60073;
-            }
-            to {
-                text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #e60073;
-            }
-        }
-
-        .game-over-screenshot {
-            max-width: 90%;
-            max-height: 300px;
-            border: 2px solid #ecf0f1;
-            border-radius: 5px;
-            margin: 5px auto;
-            height: auto;
-            object-fit: contain;
-        }
-        .restart-button {
-            background: #FF4E50;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 18px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-family: 'Rubik', sans-serif;
-            transition: transform 0.2s;
-            text-transform: uppercase;
-            font-weight: bold;
-            box-shadow: 0 4px 0 #c0392b;
-            margin-top: 5px;
-            position: sticky;
-            bottom: 10px;
-            align-self: center;
-        }
-        .restart-button:hover {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #c0392b;
-        }
-    </style>
+    <!-- Core styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/animations.css">
+    <!-- Component styles -->
+    <link rel="stylesheet" href="styles/components/title.css">
+    <link rel="stylesheet" href="styles/components/game.css">
+    <link rel="stylesheet" href="styles/components/evolution.css">
+    <link rel="stylesheet" href="styles/components/gameOver.css">
+    <link rel="stylesheet" href="styles/components/decorative.css">
+    <link rel="stylesheet" href="styles/components/ui.css">
 </head>
 <body>
     <div class="title-container">
         <h1 class="game-title">PALMERGE</h1>
     </div>
+
     <div class="test-button-container">
         <button id="test-game-over" class="test-button">Test Game Over</button>
         <button id="test-spin" class="test-button">Test Spin</button>
     </div>
+
     <div class="game-container">
         <div class="game-info">
             <div id="score">0</div>
-            <div id="next-pal"><img src="" alt="Next Pal"></div>
+            <div id="next-pal">
+                <img src="" alt="Next Pal">
+            </div>
         </div>
+
         <div class="jetragon-wrapper">
-            <img id="jetragon" class="decorative-pal" src="assets/jetragon.png" alt="">
+            <img id="jetragon" class="decorative-pal" src="assets/jetragon.png" alt="Jetragon">
         </div>
+
         <canvas id="game-canvas"></canvas>
+
         <div class="evolution-container">
             <div class="evolution-chain">
                 <div class="pal-circle"></div>
@@ -414,10 +63,13 @@
 
     <div class="game-over">
         <div class="game-over-content">
-            <h2 class="game-title" style="font-size: 32px; margin-bottom: 20px;">Game Over!</h2>
+            <h2 class="game-title">Game Over!</h2>
             <div class="game-over-score"></div>
             <div class="high-score-container">
-                <div class="current-high-score"><span class="high-score-label">High Score: </span><span class="high-score-value"></span></div>
+                <div class="current-high-score">
+                    <span class="high-score-label">High Score: </span>
+                    <span class="high-score-value"></span>
+                </div>
                 <div class="new-high-score">New High Score!</div>
             </div>
             <img class="game-over-screenshot" alt="Game Screenshot">

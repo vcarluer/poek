@@ -115,24 +115,49 @@ export class UIManager {
         this.restartButton.addEventListener('click', this.restartButtonCallback);
     }
 
-    spinJetragon(onComplete) {
+    spinJetragon(onComplete, withGlow = false) {
         if (!this.jetragonImage) {
             this.jetragonImage = document.getElementById('jetragon');
             if (!this.jetragonImage) return;
         }
 
-        // Remove any existing spin class
-        this.jetragonImage.classList.remove('spin');
+        // Remove any existing animation classes
+        this.jetragonImage.classList.remove('spin', 'golden-glow', 'spin-and-glow');
         
         // Force reflow
         void this.jetragonImage.offsetWidth;
         
-        // Add spin class to trigger animation
-        this.jetragonImage.classList.add('spin');
+        // Add appropriate animation class
+        const animationClass = withGlow ? 'spin-and-glow' : 'spin';
+        this.jetragonImage.classList.add(animationClass);
 
         // Listen for animation end
         const handleAnimationEnd = () => {
-            this.jetragonImage.classList.remove('spin');
+            this.jetragonImage.classList.remove(animationClass);
+            this.jetragonImage.removeEventListener('animationend', handleAnimationEnd);
+            if (onComplete) onComplete();
+        };
+        this.jetragonImage.addEventListener('animationend', handleAnimationEnd);
+    }
+
+    glowJetragon(onComplete) {
+        if (!this.jetragonImage) {
+            this.jetragonImage = document.getElementById('jetragon');
+            if (!this.jetragonImage) return;
+        }
+
+        // Remove any existing glow class
+        this.jetragonImage.classList.remove('golden-glow');
+        
+        // Force reflow
+        void this.jetragonImage.offsetWidth;
+        
+        // Add glow class to trigger animation
+        this.jetragonImage.classList.add('golden-glow');
+
+        // Listen for animation end
+        const handleAnimationEnd = () => {
+            this.jetragonImage.classList.remove('golden-glow');
             this.jetragonImage.removeEventListener('animationend', handleAnimationEnd);
             if (onComplete) onComplete();
         };

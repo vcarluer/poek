@@ -1,8 +1,9 @@
 import { Pal } from '../pal.js';
 
 export class GameState {
-    constructor(selectionZoneHeight) {
+    constructor(selectionZoneHeight, uiManager) {
         this.selectionZoneHeight = selectionZoneHeight;
+        this.uiManager = uiManager;
         this.reset();
         this.highScore = parseInt(localStorage.getItem('highScore')) || 0;
         this.minDropDelay = 300; // Minimum 0.3 second between drops
@@ -127,8 +128,18 @@ export class GameState {
     setLastDropTime(time) { this.lastDropTime = time; }
     setDropTimeout(timeout) { this.dropTimeout = timeout; }
     setNextType(type) { 
+        const isNewDiscovery = type && !this.discoveredPals.has(type);
+        const advancedPals = ['LIFMUNK', 'FUACK', 'ROOBY', 'ARSOX', 'MAU', 'VERDASH', 'JETRAGON'];
+        const isAdvancedPal = advancedPals.includes(type);
+        
         this.nextType = type;
-        if (type) this.discoveredPals.add(type);
+        if (type) {
+            this.discoveredPals.add(type);
+            // Trigger special effects for newly discovered advanced pals
+            if (isNewDiscovery && isAdvancedPal) {
+                this.uiManager.spinJetragon(null, true);
+            }
+        }
     }
     addPal(pal) { this.pals.add(pal); }
     removePal(pal) { this.pals.delete(pal); }

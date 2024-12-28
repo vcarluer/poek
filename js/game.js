@@ -47,10 +47,10 @@ class Game {
 
     initializeModules() {
         // Core game modules
-        this.gameState = new GameState(this.selectionZoneHeight);
+        this.uiManager = new UIManager();
+        this.gameState = new GameState(this.selectionZoneHeight, this.uiManager);
         this.renderer = new GameRenderer(this.canvas, this.selectionZoneHeight);
         this.physics = new PhysicsEngine(this.canvas.width, this.canvas.height, this.selectionZoneHeight);
-        this.uiManager = new UIManager();
 
         // Game management modules
         this.palManager = new PalManager(this.canvas, this.gameState, this.physics, this.uiManager);

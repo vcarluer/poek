@@ -87,11 +87,21 @@ export class CollisionManager {
 
                 // Check for rapid merges or new advanced Pal discovery
                 const isAdvancedPal = ['LIFMUNK', 'FUACK', 'ROOBY', 'ARSOX', 'MAU', 'VERDASH', 'JETRAGON'].includes(nextType);
-                if (!this.gameState.isJetragonSpinningActive() && (this.gameState.trackMerge() || (wasNewPalDiscovered && isAdvancedPal))) {
+                if (!this.gameState.isJetragonSpinningActive()) {
                     this.gameState.setJetragonSpinning(true);
-                    this.uiManager.spinJetragon(() => {
+                    if (wasNewPalDiscovered && isAdvancedPal) {
+                        // New advanced pal discovered - spin with glow
+                        this.uiManager.spinJetragon(() => {
+                            this.gameState.setJetragonSpinning(false);
+                        }, true);
+                    } else if (this.gameState.trackMerge()) {
+                        // Rapid merges - just spin
+                        this.uiManager.spinJetragon(() => {
+                            this.gameState.setJetragonSpinning(false);
+                        });
+                    } else {
                         this.gameState.setJetragonSpinning(false);
-                    });
+                    }
                 }
 
                 // Check for game over after fusion

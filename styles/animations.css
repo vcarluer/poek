@@ -1,0 +1,23 @@
+@keyframes float {
+    0%, 100% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, -15px); }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes golden-glow {
+    0%, 100% { filter: drop-shadow(0 0 15px gold) drop-shadow(0 0 30px gold); }
+    50% { filter: drop-shadow(0 0 30px gold) drop-shadow(0 0 45px gold); }
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 5px #FFD700, 0 0 10px #FFD700, 0 0 15px #e60073;
+    }
+    to {
+        text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #e60073;
+    }
+}

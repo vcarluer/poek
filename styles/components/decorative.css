@@ -1,0 +1,42 @@
+.jetragon-wrapper {
+    position: fixed;
+    top: 10px;
+    left: calc(50% - 10px);
+    transform: translateX(-50%);
+    animation: float 3s ease-in-out infinite;
+    width: clamp(120px, 35vw, 160px);
+    height: clamp(120px, 35vw, 160px);
+    z-index: 0;
+}
+
+#jetragon {
+    width: 100%;
+    height: 100%;
+    transform-origin: center;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+}
+
+#jetragon.spin {
+    animation: spin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#jetragon.golden-glow {
+    animation: golden-glow 1s ease-in-out 2;
+}
+
+#jetragon.spin-and-glow {
+    animation: 
+        spin 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        golden-glow 1s ease-in-out 2;
+}
+
+.decorative-pal {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+}

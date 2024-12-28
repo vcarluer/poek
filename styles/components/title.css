@@ -1,0 +1,41 @@
+.title-container {
+    min-height: 60px;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    width: 100%;
+    position: fixed;
+    top: 5px;
+    left: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.game-title {
+    font-family: 'Rubik', sans-serif;
+    color: #FF4E50;
+    font-size: clamp(28px, 7vw, 36px);
+    text-align: center;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+    text-shadow: 
+        3px 3px 0 #000,
+        -3px -3px 0 #000,
+        3px -3px 0 #000,
+        -3px 3px 0 #000,
+        0 0 10px rgba(255, 78, 80, 0.8),
+        0 0 20px rgba(255, 78, 80, 0.5);
+    letter-spacing: 2px;
+    transform: skew(-5deg);
+    -ms-transform: skew(-5deg);
+}
+
+/* Game over title variant */
+.game-over .game-title {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
