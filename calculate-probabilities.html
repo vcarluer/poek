@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PAL Probabilities</title>
+</head>
+<body>
+    <pre id="output"></pre>
+    <script src="js/pal.js"></script>
+    <script>
+        const probs = Pal.calculateProbabilities();
+        const output = 'PAL Spawn Probabilities:\n' + 
+            probs.map(p => `${p.type}: ${p.probability.toFixed(2)}%`).join('\n');
+        document.getElementById('output').textContent = output;
+    </script>
+</body>
+</html>

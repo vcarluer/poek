@@ -14,14 +14,32 @@ class Pal {
         JETRAGON: { radius: 70, score: 1024, next: null, image: 'assets/jetragon.png', color: '#4169E1' }
     };
 
+    static calculateProbabilities() {
+        const initialTypes = ['LAMBALL', 'CHIKIPI', 'FOXPARKS', 'PENGULLET', 'CATTIVA'];
+        
+        // Calculate weights using logarithmic curve
+        const weights = initialTypes.map(type => {
+            const radius = Pal.TYPES[type].radius;
+            return Math.log(100/radius) * Math.pow(1/radius, 2);
+        });
+        
+        // Calculate total weight for normalization
+        const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+        
+        // Calculate and return probabilities as percentages
+        return initialTypes.map((type, index) => ({
+            type,
+            probability: (weights[index] / totalWeight) * 100
+        }));
+    }
+
     static getRandomInitialType() {
         // Only return one of the first five Pal types for initial drops with weighted probabilities
         const initialTypes = ['LAMBALL', 'CHIKIPI', 'FOXPARKS', 'PENGULLET', 'CATTIVA'];
         
-        // Calculate weights using logarithmic curve for more extreme probability differences
+        // Calculate weights using logarithmic curve
         const weights = initialTypes.map(type => {
             const radius = Pal.TYPES[type].radius;
-            // Use log scale and square the inverse relationship for more dramatic effect
             return Math.log(100/radius) * Math.pow(1/radius, 2);
         });
         
