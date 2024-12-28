@@ -473,7 +473,9 @@ class Game {
         const gameOverScreen = document.querySelector('.game-over');
         const scoreDisplay = gameOverScreen.querySelector('.game-over-score');
         const screenshotImg = gameOverScreen.querySelector('.game-over-screenshot');
-        const currentHighScore = gameOverScreen.querySelector('.current-high-score span');
+        const currentHighScore = gameOverScreen.querySelector('.current-high-score');
+        const highScoreLabel = currentHighScore.querySelector('.high-score-label');
+        const highScoreValue = currentHighScore.querySelector('.high-score-value');
         const newHighScoreDisplay = gameOverScreen.querySelector('.new-high-score');
         
         // Update score display
@@ -486,10 +488,12 @@ class Game {
             localStorage.setItem('highScore', this.highScore);
             newHighScoreDisplay.style.display = 'block';
             currentHighScore.style.display = 'none';
+            highScoreLabel.style.display = 'none';
         } else {
             newHighScoreDisplay.style.display = 'none';
             currentHighScore.style.display = 'block';
-            currentHighScore.textContent = this.highScore;
+            highScoreLabel.style.display = 'inline';
+            highScoreValue.textContent = this.highScore;
         }
         
         // Show the game over screen
