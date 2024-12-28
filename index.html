@@ -167,7 +167,7 @@
             object-position: center;
         }
         .test-button-container {
-            display: none; /* Hidden by default, shown in dev mode */
+            display: none;
             position: fixed;
             top: 20px;
             right: 20px;
@@ -273,13 +273,43 @@
             font-family: 'Press Start 2P', Arial, sans-serif;
             color: #FFD700;
             font-size: 36px;
-            margin: 20px 0;
+            margin: 20px 0 10px;
             text-shadow: 
                 2px 0 0 #000,
                 -2px 0 0 #000,
                 0 2px 0 #000,
                 0 -2px 0 #000;
         }
+
+        .high-score-container {
+            margin-bottom: 20px;
+            font-family: 'Press Start 2P', Arial, sans-serif;
+        }
+
+        .current-high-score {
+            color: #ecf0f1;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .new-high-score {
+            display: none;
+            color: #FFD700;
+            font-size: 24px;
+            animation: glow 1s ease-in-out infinite alternate;
+            text-shadow: 0 0 10px #FFD700;
+            margin: 10px 0;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px #FFD700, 0 0 10px #FFD700, 0 0 15px #e60073;
+            }
+            to {
+                text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #e60073;
+            }
+        }
+
         .game-over-screenshot {
             max-width: 100%;
             border: 2px solid #ecf0f1;
@@ -342,6 +372,10 @@
         <div class="game-over-content">
             <h2 class="game-title" style="font-size: 32px; margin-bottom: 20px;">Game Over!</h2>
             <div class="game-over-score"></div>
+            <div class="high-score-container">
+                <div class="current-high-score">High Score: <span></span></div>
+                <div class="new-high-score">New High Score!</div>
+            </div>
             <img class="game-over-screenshot" alt="Game Screenshot">
             <button class="restart-button">Play Again</button>
         </div>

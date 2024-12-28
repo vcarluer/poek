@@ -3,6 +3,7 @@ class Game {
         try {
             this.dropTimeout = null;
             this.lastDroppedPal = null;
+            this.highScore = parseInt(localStorage.getItem('highScore')) || 0;
             this.minDropDelay = 300; // Minimum 0.3 second between drops
             this.lastDropTime = 0; // Track when the last Pal was dropped
             this.safetyMargin = 100; // Pixels of extra clearance needed before next drop
@@ -472,9 +473,23 @@ class Game {
         const gameOverScreen = document.querySelector('.game-over');
         const scoreDisplay = gameOverScreen.querySelector('.game-over-score');
         const screenshotImg = gameOverScreen.querySelector('.game-over-screenshot');
+        const currentHighScore = gameOverScreen.querySelector('.current-high-score span');
+        const newHighScoreDisplay = gameOverScreen.querySelector('.new-high-score');
         
+        // Update score display
         scoreDisplay.textContent = this.score;
         screenshotImg.src = screenshot;
+        
+        // Check for new high score
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            localStorage.setItem('highScore', this.highScore);
+            newHighScoreDisplay.style.display = 'block';
+            currentHighScore.textContent = this.score;
+        } else {
+            newHighScoreDisplay.style.display = 'none';
+            currentHighScore.textContent = this.highScore;
+        }
         
         // Show the game over screen
         gameOverScreen.classList.add('active');
@@ -491,9 +506,11 @@ class Game {
         }
 
         // Hide game over screen
-        document.querySelector('.game-over').classList.remove('active');
+        const gameOverScreen = document.querySelector('.game-over');
+        gameOverScreen.classList.remove('active');
+        gameOverScreen.querySelector('.new-high-score').style.display = 'none';
         
-        // Reset game state
+        // Reset game state while preserving high score
         this.score = 0;
         this.scoreElement.textContent = '0';
         this.gameOver = false;
