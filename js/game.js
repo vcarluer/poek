@@ -439,7 +439,7 @@ class Game {
     updateEvolutionList() {
         const evolutionOrder = [
             'LAMBALL', 'CHIKIPI', 'FOXPARKS', 'PENGULLET', 'CATTIVA',
-            'LIFMUNK', 'FUACK', 'ROOBY', 'ARSOX', 'VERDASH', 'MAU', 'JETRAGON'
+            'LIFMUNK', 'FUACK', 'ROOBY', 'ARSOX', 'MAU', 'VERDASH', 'JETRAGON'
         ];
 
         const circles = document.querySelectorAll('.pal-circle');
