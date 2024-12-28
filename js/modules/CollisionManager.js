@@ -78,14 +78,16 @@ export class CollisionManager {
                 this.uiManager.updateScore(newScore);
                 
                 // Update discovered Pals and evolution list
+                const wasNewPalDiscovered = !this.gameState.getDiscoveredPals().has(nextType);
                 this.gameState.getDiscoveredPals().add(nextType);
                 this.uiManager.updateEvolutionList(
                     this.gameState.getDiscoveredPals(),
                     Pal.TYPES
                 );
 
-                // Check for rapid merges
-                if (!this.gameState.isJetragonSpinningActive() && this.gameState.trackMerge()) {
+                // Check for rapid merges or new advanced Pal discovery
+                const isAdvancedPal = ['LIFMUNK', 'FUACK', 'ROOBY', 'ARSOX', 'MAU', 'VERDASH', 'JETRAGON'].includes(nextType);
+                if (!this.gameState.isJetragonSpinningActive() && (this.gameState.trackMerge() || (wasNewPalDiscovered && isAdvancedPal))) {
                     this.gameState.setJetragonSpinning(true);
                     this.uiManager.spinJetragon(() => {
                         this.gameState.setJetragonSpinning(false);
