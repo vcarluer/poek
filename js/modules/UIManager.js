@@ -122,22 +122,22 @@ export class UIManager {
             if (!this.jetragonImage) return;
         }
 
-        // Get current Y position
-        const rect = this.jetragonImage.getBoundingClientRect();
-        const currentY = rect.top;
-
-        // Set current Y position as CSS variable
-        this.jetragonImage.style.setProperty('--current-y', `${currentY}px`);
-
-        // Add spin class
+        // Remove any existing spin class
+        this.jetragonImage.classList.remove('spin');
+        
+        // Force reflow
+        void this.jetragonImage.offsetWidth;
+        
+        // Add spin class to trigger animation
         this.jetragonImage.classList.add('spin');
 
-        // Reset after animation
-        setTimeout(() => {
+        // Listen for animation end
+        const handleAnimationEnd = () => {
             this.jetragonImage.classList.remove('spin');
-            this.jetragonImage.style.removeProperty('--current-y');
+            this.jetragonImage.removeEventListener('animationend', handleAnimationEnd);
             if (onComplete) onComplete();
-        }, 500);
+        };
+        this.jetragonImage.addEventListener('animationend', handleAnimationEnd);
     }
 
     cleanup() {

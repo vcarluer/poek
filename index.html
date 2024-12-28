@@ -105,13 +105,13 @@
             width: 100%;
         }
         @keyframes float {
-            0%, 100% { transform: translate(-50%, 0); }
-            50% { transform: translate(-50%, -15px); }
+            0%, 100% { transform: translate(-50%, 0) rotate(0deg); }
+            50% { transform: translate(-50%, -15px) rotate(0deg); }
         }
 
         @keyframes spin {
-            0% { transform: translate(-50%, var(--y, 0)) rotate(0deg); }
-            100% { transform: translate(-50%, var(--y, 0)) rotate(360deg); }
+            0% { transform: translate(-50%, 0) rotate(0deg); }
+            100% { transform: translate(-50%, 0) rotate(360deg); }
         }
 
         #jetragon {
@@ -125,8 +125,7 @@
         }
 
         #jetragon.spin {
-            --y: var(--current-y, 0);
-            animation: spin 0.5s ease-in-out forwards !important;
+            animation: spin 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
         .decorative-pal {
             position: absolute;
