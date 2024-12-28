@@ -443,7 +443,10 @@ class Game {
         for (const pal of Array.from(this.pals)) {
             if (!pal.body || !this.pals.has(pal)) continue; // Skip if pal was removed
             
-            if (!pal.body.isStatic && pal.body.position.y < this.selectionZoneHeight + Pal.TYPES[pal.type].radius) {
+            // Only check Pals that have been dropped (not in selection zone)
+            if (!pal.body.isStatic && 
+                pal.body.position.y > this.selectionZoneHeight && 
+                pal.body.position.y < this.selectionZoneHeight + Pal.TYPES[pal.type].radius) {
                 this.gameOver = true;
                 alert(`Game Over! Score ${this.score}`);
                 return;
