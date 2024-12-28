@@ -18,7 +18,7 @@
             -moz-user-select: none;
             -ms-user-select: none;
         }
-        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@700&family=Press+Start+2P&display=swap');
         .title-container {
             min-height: 120px;
             display: -ms-flexbox;
@@ -29,7 +29,7 @@
             justify-content: center;
             width: 100%;
             position: fixed;
-            top: 80px;
+            top: 20px;
             left: 0;
             right: 0;
             z-index: 10;
@@ -64,7 +64,7 @@
             background-color: #2c3e50;
             touch-action: none;
             overflow: hidden;
-            padding-top: 200px;
+            padding-top: 160px;
         }
         .game-container {
             position: relative;
@@ -98,7 +98,8 @@
             border-radius: 50%;
         }
         #jetragon {
-            top: -180px;
+            position: fixed;
+            top: 0;
             left: 50%;
             width: 300px;
             height: 300px;
@@ -116,9 +117,22 @@
             z-index: 2;
         }
         #score {
-            color: #ecf0f1;
-            font-size: 24px;
-            font-family: Arial, sans-serif;
+            font-size: 32px;
+            font-family: 'Press Start 2P', Arial, sans-serif;
+            color: #FFD700;
+            text-shadow: 
+                4px 0 0 #000,
+                -4px 0 0 #000,
+                0 4px 0 #000,
+                0 -4px 0 #000,
+                2px 2px 0 #000,
+                -2px -2px 0 #000,
+                2px -2px 0 #000,
+                -2px 2px 0 #000;
+            padding: 8px 12px;
+            image-rendering: pixelated;
+            line-height: 1.2;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.7));
         }
         #next-pal {
             display: -ms-flexbox;
