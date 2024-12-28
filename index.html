@@ -257,29 +257,35 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
             display: none;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             z-index: 1000;
             flex-direction: column;
-            gap: 20px;
-            padding: 20px;
+            gap: 10px;
+            padding: 10px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .game-over.active {
             display: flex;
         }
         .game-over-content {
             background: #2c3e50;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             text-align: center;
             max-width: 90%;
             width: 400px;
+            margin: 10px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         .game-over-score {
             font-family: 'Press Start 2P', Arial, sans-serif;
             color: #FFD700;
-            font-size: 36px;
-            margin: 20px 0 10px;
+            font-size: 32px;
+            margin: 5px 0;
             text-shadow: 
                 2px 0 0 #000,
                 -2px 0 0 #000,
@@ -288,7 +294,7 @@
         }
 
         .high-score-container {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             font-family: 'Press Start 2P', Arial, sans-serif;
         }
 
@@ -317,17 +323,20 @@
         }
 
         .game-over-screenshot {
-            max-width: 100%;
+            max-width: 90%;
+            max-height: 300px;
             border: 2px solid #ecf0f1;
             border-radius: 5px;
-            margin: 10px 0;
+            margin: 5px auto;
+            height: auto;
+            object-fit: contain;
         }
         .restart-button {
             background: #FF4E50;
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 20px;
+            padding: 12px 25px;
+            font-size: 18px;
             border-radius: 5px;
             cursor: pointer;
             font-family: 'Rubik', sans-serif;
@@ -335,6 +344,10 @@
             text-transform: uppercase;
             font-weight: bold;
             box-shadow: 0 4px 0 #c0392b;
+            margin-top: 5px;
+            position: sticky;
+            bottom: 10px;
+            align-self: center;
         }
         .restart-button:hover {
             transform: translateY(2px);

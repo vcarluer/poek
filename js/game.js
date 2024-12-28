@@ -129,32 +129,53 @@ class Game {
         }
     }
 
-    restartGame() {
+    async restartGame() {
         try {
-            // Stop and cleanup current game
+            // Stop the game loop first
             if (this.gameLoop) {
-                this.gameLoop.cleanup();
-            }
-            if (this.inputHandler) {
-                this.inputHandler.cleanup();
+                this.gameLoop.stop();
             }
 
-            // Hide game over screen
-            this.uiManager.hideGameOverScreen();
+            // Store necessary references
+            const images = this.gameState ? this.gameState.images : null;
             
-            // Reset game state and UI
-            this.gameState.reset();
-            this.uiManager.updateScore(0);
-            
-            // Reset next pal
-            this.gameState.setNextType(Pal.getRandomInitialType());
-            this.uiManager.updateNextPal(this.gameState.getNextType(), this.gameState.images);
-            this.uiManager.updateEvolutionList(this.gameState.getDiscoveredPals(), Pal.TYPES);
+            // Clean up all modules in reverse order of initialization
+            if (this.inputHandler) this.inputHandler.cleanup();
+            if (this.gameLoop) this.gameLoop.cleanup();
+            if (this.collisionManager) this.collisionManager.cleanup();
+            if (this.palManager) this.palManager.cleanup();
+            if (this.physics) this.physics.cleanup();
+            if (this.renderer) this.renderer.cleanup();
+            if (this.uiManager) {
+                this.uiManager.hideGameOverScreen();
+                this.uiManager.cleanup();
+            }
 
-            // Reinitialize modules with fresh state
+            // Clear all references
+            this.gameLoop = null;
+            this.inputHandler = null;
+            this.physics = null;
+            this.palManager = null;
+            this.collisionManager = null;
+            this.renderer = null;
+            this.uiManager = null;
+            this.gameState = null;
+
+            // Reinitialize canvas and modules
+            this.initializeCanvas();
             this.initializeModules();
-            
-            // Start new game loop
+            this.setupEventHandlers();
+            this.setupDevMode();
+
+            // Restore game state
+            if (images) {
+                this.gameState.setImages(images);
+                this.gameState.setNextType(Pal.getRandomInitialType());
+                this.uiManager.updateNextPal(this.gameState.getNextType(), images);
+                this.uiManager.updateEvolutionList(this.gameState.getDiscoveredPals(), Pal.TYPES);
+            }
+
+            // Start the game loop
             this.gameLoop.start();
         } catch (error) {
             console.error('Failed to restart game:', error);

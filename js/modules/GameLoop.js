@@ -5,15 +5,23 @@ export class GameLoop {
         this.renderer = renderer;
         this.palManager = palManager;
         this.isRunning = false;
+        this.animationFrameId = null;
+        this.boundLoop = this.loop.bind(this);
     }
 
     start() {
-        this.isRunning = true;
-        this.loop();
+        if (!this.isRunning) {
+            this.isRunning = true;
+            this.boundLoop();
+        }
     }
 
     stop() {
         this.isRunning = false;
+        if (this.animationFrameId !== null) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
     }
 
     loop() {
@@ -21,7 +29,7 @@ export class GameLoop {
         if (!this.isRunning) return;
 
         // Request next frame first to ensure smooth animation
-        requestAnimationFrame(this.loop.bind(this));
+        this.animationFrameId = requestAnimationFrame(this.boundLoop);
 
         // Don't update if game is over
         if (this.gameState.isGameOver()) return;
@@ -62,5 +70,12 @@ export class GameLoop {
     cleanup() {
         this.stop();
         this.physics.reset();
+        this.isRunning = false;
+        this.animationFrameId = null;
+        this.gameState = null;
+        this.physics = null;
+        this.renderer = null;
+        this.palManager = null;
+        this.boundLoop = null;
     }
 }

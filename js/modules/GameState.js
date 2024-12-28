@@ -52,16 +52,23 @@ export class GameState {
 
         // Check if any non-static Pal touches top of play zone
         for (const pal of Array.from(this.pals)) {
-            if (!pal.body || !this.pals.has(pal) || pal.isProcessing) continue;
+            if (!pal.body || !this.pals.has(pal)) continue;
+            
+            // Skip the current selected Pal and recently dropped Pals
+            if (pal === this.currentPal || 
+                pal === this.lastDroppedPal || 
+                Date.now() - this.lastDropTime < 500) continue;
             
             const radius = this.getPalRadius(pal.type);
             const palTop = pal.body.position.y - radius;
             const palBottom = pal.body.position.y + radius;
+            const palVelocity = Math.abs(pal.body.velocity.y);
             
-            // Check if Pal is in the selection zone and not static
+            // Check if Pal is in the selection zone, not static, and has relatively low velocity
             if (!pal.body.isStatic && 
                 palTop <= selectionZoneHeight + radius && 
-                palBottom >= selectionZoneHeight - radius) {
+                palBottom >= selectionZoneHeight - radius &&
+                palVelocity < 2) { // Only trigger game over if the Pal is moving slowly
                 this.gameOver = true;
                 return true;
             }

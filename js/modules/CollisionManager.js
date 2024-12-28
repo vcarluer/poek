@@ -104,4 +104,14 @@ export class CollisionManager {
             if (palB) palB.isProcessing = false;
         }
     }
+
+    cleanup() {
+        // Remove collision handlers from physics engine
+        this.physicsEngine.Events.off(this.physicsEngine.engine);
+        
+        // Clear references
+        this.gameState = null;
+        this.physicsEngine = null;
+        this.uiManager = null;
+    }
 }

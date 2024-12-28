@@ -64,4 +64,20 @@ export class PalManager {
             }
         }
     }
+
+    cleanup() {
+        // Remove all pals from physics world
+        const pals = this.gameState.getPals();
+        pals.forEach(pal => {
+            if (pal.body) {
+                this.physics.removeBody(pal.body);
+            }
+        });
+        
+        // Clear references
+        this.canvas = null;
+        this.gameState = null;
+        this.physics = null;
+        this.uiManager = null;
+    }
 }
