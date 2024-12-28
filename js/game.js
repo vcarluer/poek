@@ -12,14 +12,15 @@ class Game {
                 throw new Error('Canvas element not found');
             }
 
-            // Set canvas size based on viewport - using mobile ratio for consistency
+            // Set canvas size based on viewport with minimum dimensions
             this.canvas.width = Math.min(window.innerWidth * 0.9, 450);
-            // Use mobile height ratio for all devices
-            this.canvas.height = window.innerHeight * 0.85;
+            // Use mobile height ratio for all devices with minimum height
+            this.canvas.height = Math.max(window.innerHeight * 0.85, 400);
             
             // Define zones - set to Cattiva's diameter (radius 40 * 2 = 80)
             this.selectionZoneHeight = 80;
-            this.playZoneHeight = this.canvas.height - this.selectionZoneHeight;
+            // Ensure minimum play zone height of 320 pixels (400 - 80)
+            this.playZoneHeight = Math.max(this.canvas.height - this.selectionZoneHeight, 320);
 
             // Get context after setting size
             this.ctx = this.canvas.getContext('2d', {
@@ -80,13 +81,14 @@ class Game {
     }
 
     handleResize() {
-        // Update canvas size - using mobile ratio for consistency
+        // Update canvas size with minimum dimensions
         this.canvas.width = Math.min(window.innerWidth * 0.9, 450);
-        this.canvas.height = window.innerHeight * 0.85;
+        this.canvas.height = Math.max(window.innerHeight * 0.85, 400);
         
         // Update zones - set to Cattiva's diameter (radius 40 * 2 = 80)
         this.selectionZoneHeight = 80;
-        this.playZoneHeight = this.canvas.height - this.selectionZoneHeight;
+        // Ensure minimum play zone height of 320 pixels (400 - 80)
+        this.playZoneHeight = Math.max(this.canvas.height - this.selectionZoneHeight, 320);
         
             // Use mobile gravity for consistent physics
             this.engine.world.gravity.y = 1.0;
