@@ -343,10 +343,11 @@ class Game {
         
         const palType = this.lastDroppedPal.type;
         const radius = Pal.TYPES[palType].radius;
-        const palBottom = this.lastDroppedPal.body.position.y + radius;
+        const palTop = this.lastDroppedPal.body.position.y - radius;
         
-        // Check if the last dropped Pal is fully in the play zone plus safety margin
-        return palBottom < (this.canvas.height - this.safetyMargin);
+        // Only allow new Pal when the last one is completely out of the drop zone
+        // plus a safety margin to prevent any overlap
+        return palTop > (this.selectionZoneHeight + radius + 20);
     }
 
     createNewPal() {
@@ -445,10 +446,17 @@ class Game {
         for (const pal of Array.from(this.pals)) {
             if (!pal.body || !this.pals.has(pal)) continue; // Skip if pal was removed
             
-            // Only check Pals that have been dropped (not in selection zone)
+            // Only check Pals that:
+            // 1. Have been dropped (not static)
+            // 2. Are completely out of the drop zone
+            // 3. Are touching the drop zone boundary
+            const radius = Pal.TYPES[pal.type].radius;
+            const palTop = pal.body.position.y - radius;
+            const palBottom = pal.body.position.y + radius;
+            
             if (!pal.body.isStatic && 
-                pal.body.position.y > this.selectionZoneHeight && 
-                pal.body.position.y < this.selectionZoneHeight + Pal.TYPES[pal.type].radius) {
+                palTop > this.selectionZoneHeight && 
+                palBottom < this.selectionZoneHeight + radius) {
                 this.gameOver = true;
                 alert(`Game Over! Score ${this.score}`);
                 return;
