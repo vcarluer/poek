@@ -18,10 +18,11 @@ class Pal {
         // Only return one of the first five Pal types for initial drops with weighted probabilities
         const initialTypes = ['LAMBALL', 'CHIKIPI', 'FOXPARKS', 'PENGULLET', 'CATTIVA'];
         
-        // Calculate weights based on inverse of radius (smaller radius = higher probability)
+        // Calculate weights using logarithmic curve for more extreme probability differences
         const weights = initialTypes.map(type => {
             const radius = Pal.TYPES[type].radius;
-            return 1 / radius; // Inverse relationship: larger radius = smaller weight
+            // Use log scale and square the inverse relationship for more dramatic effect
+            return Math.log(100/radius) * Math.pow(1/radius, 2);
         });
         
         // Calculate total weight for normalization
