@@ -17,7 +17,7 @@ class Game {
             // Set canvas size based on viewport with minimum dimensions
             this.canvas.width = Math.min(window.innerWidth * 0.95, 393);
             // Use mobile height ratio for all devices with minimum height
-            this.canvas.height = Math.max(window.innerHeight * 0.92, 400);
+            this.canvas.height = Math.max(window.innerHeight * 0.85, 400);
             
             // Define zones - set to Cattiva's diameter (radius 40 * 2 = 80)
             this.selectionZoneHeight = 70;
@@ -108,7 +108,7 @@ class Game {
     handleResize() {
         // Update canvas size with minimum dimensions
         this.canvas.width = Math.min(window.innerWidth * 0.95, 393);
-        this.canvas.height = Math.max(window.innerHeight * 0.92, 400);
+        this.canvas.height = Math.max(window.innerHeight * 0.85, 400);
         
         // Update zones - set to Cattiva's diameter (radius 40 * 2 = 80)
         this.selectionZoneHeight = 70;

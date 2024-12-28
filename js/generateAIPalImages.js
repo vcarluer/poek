@@ -29,11 +29,11 @@ const palData = [
     },
     { 
         name: 'chikipi',
-        prompt: 'A bird-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A yellow Chikipi with small wing details. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A single complete bird-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A yellow Chikipi with small wing details, shown as a full body character. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle. The character must be alone and fully visible in the frame.'
     },
     { 
         name: 'foxparks',
-        prompt: 'A fox-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. An orange Foxparks with flame patterns. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A fox-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. An orange Foxparks with simple design. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
     },
     { 
         name: 'pengullet',
@@ -49,7 +49,7 @@ const palData = [
     },
     { 
         name: 'fuack',
-        prompt: 'A duck-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A blue Fuack with water droplet patterns. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle'
+        prompt: 'A single complete duck-like creature from Pal in anime art style, centered perfectly inside a solid white circular frame with sharp edges. A blue Fuack with simple design, shown as a full body character. Must be in Pal art style. Clean cel shading, simple lines, official game artwork, completely transparent background outside the white circle. The character must be alone and fully visible in the frame.'
     },
     { 
         name: 'rooby',

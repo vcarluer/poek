@@ -1,0 +1,9 @@
+{
+  "android": {
+    "iconBackground": "#FFFFFF",
+    "icon": {
+      "source": "assets/jetragon.png",
+      "foreground": "assets/jetragon.png"
+    }
+  }
+}
