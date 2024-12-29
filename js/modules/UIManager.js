@@ -22,11 +22,14 @@ export class UIManager {
         }
     }
 
-    updateEvolutionList(discoveredPals, palTypes) {
+    updateEvolutionList(discoveredPals, palTypes, mergedType = null) {
         const circles = document.querySelectorAll('.pal-circle');
         circles.forEach((circle, index) => {
             const type = this.evolutionOrder[index];
             const palData = palTypes[type];
+            const wasDiscovered = circle.querySelector('img') !== null;
+            const isNewlyDiscovered = discoveredPals.has(type) && !wasDiscovered;
+            const isSameAsMerged = type === mergedType && wasDiscovered;
             
             // Clear previous content
             circle.innerHTML = '';
@@ -37,6 +40,14 @@ export class UIManager {
                 const img = document.createElement('img');
                 img.src = palData.image;
                 img.alt = type;
+                
+                // Add animation classes based on conditions
+                if (isNewlyDiscovered) {
+                    img.classList.add('bounce-in');
+                } else if (isSameAsMerged) {
+                    img.classList.add('rotate-once');
+                }
+                
                 circle.appendChild(img);
             } else {
                 // Show question mark
@@ -131,19 +142,40 @@ export class UIManager {
         const animationClass = withGlow ? 'spin-and-glow' : 'spin';
         this.jetragonImage.classList.add(animationClass);
 
-        // Listen for animation end
-        const handleAnimationEnd = () => {
-            this.jetragonImage.classList.remove(animationClass);
-            this.jetragonImage.removeEventListener('animationend', handleAnimationEnd);
-            if (onComplete) onComplete();
-        };
-        this.jetragonImage.addEventListener('animationend', handleAnimationEnd);
+        // For spin animation only, listen for animation end
+        if (!withGlow) {
+            const handleSpinEnd = () => {
+                this.jetragonImage.classList.remove('spin');
+                this.jetragonImage.removeEventListener('animationend', handleSpinEnd);
+                if (onComplete) onComplete();
+            };
+            this.jetragonImage.addEventListener('animationend', handleSpinEnd);
+        } else {
+            // For spin-and-glow, keep glowing after spin ends
+            const handleSpinAndGlowEnd = () => {
+                this.jetragonImage.classList.remove('spin-and-glow');
+                this.jetragonImage.classList.add('golden-glow');
+                this.jetragonImage.removeEventListener('animationend', handleSpinAndGlowEnd);
+                
+                // Set timeout for extended glow duration (8s total)
+                setTimeout(() => {
+                    this.jetragonImage.classList.remove('golden-glow');
+                    if (onComplete) onComplete();
+                }, 4000); // Additional 4s after the spin-and-glow
+            };
+            this.jetragonImage.addEventListener('animationend', handleSpinAndGlowEnd);
+        }
     }
 
     glowJetragon(onComplete) {
         if (!this.jetragonImage) {
             this.jetragonImage = document.getElementById('jetragon');
             if (!this.jetragonImage) return;
+        }
+
+        // If already has spin-and-glow, don't add additional glow
+        if (this.jetragonImage.classList.contains('spin-and-glow')) {
+            return;
         }
 
         // Remove any existing glow class
@@ -155,13 +187,11 @@ export class UIManager {
         // Add glow class to trigger animation
         this.jetragonImage.classList.add('golden-glow');
 
-        // Listen for animation end
-        const handleAnimationEnd = () => {
+        // Set timeout for extended glow duration
+        setTimeout(() => {
             this.jetragonImage.classList.remove('golden-glow');
-            this.jetragonImage.removeEventListener('animationend', handleAnimationEnd);
             if (onComplete) onComplete();
-        };
-        this.jetragonImage.addEventListener('animationend', handleAnimationEnd);
+        }, 4000);
     }
 
     cleanup() {

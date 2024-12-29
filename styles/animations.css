@@ -9,8 +9,56 @@
 }
 
 @keyframes golden-glow {
-    0%, 100% { filter: drop-shadow(0 0 15px gold) drop-shadow(0 0 30px gold); }
-    50% { filter: drop-shadow(0 0 30px gold) drop-shadow(0 0 45px gold); }
+    0%, 100% { filter: drop-shadow(0 0 20px gold) drop-shadow(0 0 40px gold); }
+    50% { filter: drop-shadow(0 0 40px gold) drop-shadow(0 0 60px gold); }
+}
+
+.golden-glow {
+    animation: golden-glow 4s ease-in-out infinite;
+}
+
+.spin {
+    animation: spin 2s linear infinite;
+}
+
+.spin-and-glow {
+    animation: spin 2s linear infinite, golden-glow 4s ease-in-out infinite;
+}
+
+@keyframes bounce-in {
+    0% {
+        transform: translate(-50%, 20px) scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -10px) scale(1.05);
+        opacity: 0.8;
+    }
+    70% {
+        transform: translate(-50%, 5px) scale(0.95);
+        opacity: 0.9;
+    }
+    100% {
+        transform: translate(-50%, 0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes rotate-once {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+.bounce-in {
+    animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.rotate-once {
+    animation: rotate-once 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes glow {

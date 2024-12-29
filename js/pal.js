@@ -94,6 +94,7 @@ export class Pal {
         const { Bodies, World } = window.Matter;
         
         this.type = type;
+        this.isGlowing = false;
         const { radius } = Pal.TYPES[type];
         
         // Create the Matter.js body with adjusted physics properties
@@ -126,8 +127,17 @@ export class Pal {
             ctx.shadowBlur = 4;
             ctx.beginPath();
             ctx.arc(0, 0, radius, 0, Math.PI * 2);
-            ctx.fillStyle = Pal.TYPES[this.type].color;
+            ctx.fillStyle = this.type === 'JETRAGON' ? '#FFD700' : Pal.TYPES[this.type].color;
             ctx.fill();
+
+            // Add glow effect if active
+            if (this.isGlowing || this.type === 'JETRAGON') {
+                ctx.shadowColor = 'gold';
+                ctx.shadowBlur = 20;
+                ctx.strokeStyle = 'gold';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+            }
             
             // Reset shadow for image
             ctx.shadowColor = 'transparent';

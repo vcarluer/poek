@@ -82,26 +82,30 @@ export class CollisionManager {
                 this.gameState.getDiscoveredPals().add(nextType);
                 this.uiManager.updateEvolutionList(
                     this.gameState.getDiscoveredPals(),
-                    Pal.TYPES
+                    Pal.TYPES,
+                    palA.type // Pass the merged Pal type to trigger rotation animation
                 );
 
-                // Check for rapid merges or new advanced Pal discovery
+                // Check for rapid merges or new Pal discovery
                 const isAdvancedPal = ['LIFMUNK', 'FUACK', 'ROOBY', 'ARSOX', 'MAU', 'VERDASH', 'JETRAGON'].includes(nextType);
-                if (!this.gameState.isJetragonSpinningActive()) {
-                    this.gameState.setJetragonSpinning(true);
-                    if (wasNewPalDiscovered && isAdvancedPal) {
-                        // New advanced pal discovered - spin with glow
+                
+                // Always activate glow on new pal discovery
+                if (wasNewPalDiscovered) {
+                    if (!this.gameState.isJetragonSpinningActive()) {
+                        this.gameState.setJetragonSpinning(true);
                         this.uiManager.spinJetragon(() => {
                             this.gameState.setJetragonSpinning(false);
-                        }, true);
-                    } else if (this.gameState.trackMerge()) {
-                        // Rapid merges - just spin
-                        this.uiManager.spinJetragon(() => {
-                            this.gameState.setJetragonSpinning(false);
-                        });
+                        }, true); // Always with glow for new discoveries
                     } else {
-                        this.gameState.setJetragonSpinning(false);
+                        // If already spinning, just add glow
+                        this.uiManager.glowJetragon();
                     }
+                } else if (!this.gameState.isJetragonSpinningActive() && this.gameState.trackMerge()) {
+                    // Rapid merges without new discovery - just spin
+                    this.gameState.setJetragonSpinning(true);
+                    this.uiManager.spinJetragon(() => {
+                        this.gameState.setJetragonSpinning(false);
+                    });
                 }
 
                 // Check for game over after fusion
