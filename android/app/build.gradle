@@ -42,6 +42,11 @@ dependencies {
     implementation project(':capacitor-cordova-android-plugins')
 }
 
+// Add uninstall task
+task uninstall(type: Exec) {
+    commandLine 'adb', 'uninstall', 'com.gamersassociate.palmerge'
+}
+
 apply from: 'capacitor.build.gradle'
 
 try {
