@@ -57,21 +57,23 @@ export class GameLoop {
         // Accumulate time for physics updates
         this.accumulator += frameTime;
 
-        // Update physics with fixed timestep
+        // Always run at least one physics update per frame to keep checking game over
+        this.physics.update();
+        
+        // Check for game over after physics update
+        if (this.gameState.checkGameOver(this.gameState.selectionZoneHeight)) {
+            const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
+            this.gameState.uiManager.showGameOverScreen(
+                this.gameState.getScore(),
+                this.gameState.getHighScore(),
+                screenshot
+            );
+            return; // Exit immediately when game over is detected
+        }
+
+        // Additional physics updates if needed
         while (this.accumulator >= this.fixedTimeStep) {
             this.physics.update();
-            
-            // Check for game over after each physics update
-            if (this.gameState.checkGameOver(this.gameState.selectionZoneHeight)) {
-                const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
-                this.gameState.uiManager.showGameOverScreen(
-                    this.gameState.getScore(),
-                    this.gameState.getHighScore(),
-                    screenshot
-                );
-                return; // Exit immediately when game over is detected
-            }
-            
             this.accumulator -= this.fixedTimeStep;
         }
 
