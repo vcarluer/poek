@@ -46,9 +46,54 @@ export class CollisionManager {
             const nextType = Pal.TYPES[palA.type].next;
             
             if (nextType) {
-                // Calculate merge position
-                const midX = (palA.body.position.x + palB.body.position.x) / 2;
-                const midY = (palA.body.position.y + palB.body.position.y) / 2;
+                // Calculate initial merge position
+                let midX = (palA.body.position.x + palB.body.position.x) / 2;
+                let midY = (palA.body.position.y + palB.body.position.y) / 2;
+
+                // Get radius of the new Pal
+                const newRadius = Pal.TYPES[nextType].radius;
+                
+                // Check for nearby Pals and adjust position if needed
+                const pals = Array.from(this.gameState.getPals());
+                const safeDistance = newRadius * 1.2; // Add 20% buffer for safety
+                
+                // Try to find a clear spot in a spiral pattern
+                let angle = 0;
+                let distance = 0;
+                const maxAttempts = 8; // Limit search to prevent infinite loops
+                let attempts = 0;
+                
+                while (attempts < maxAttempts) {
+                    // Check if current position has enough space
+                    let hasSpace = true;
+                    for (const otherPal of pals) {
+                        if (otherPal === palA || otherPal === palB) continue;
+                        
+                        const dx = otherPal.body.position.x - midX;
+                        const dy = otherPal.body.position.y - midY;
+                        const minDistance = safeDistance + Pal.TYPES[otherPal.type].radius;
+                        const actualDistance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (actualDistance < minDistance) {
+                            hasSpace = false;
+                            break;
+                        }
+                    }
+                    
+                    if (hasSpace) break;
+                    
+                    // Move position in a spiral pattern
+                    attempts++;
+                    angle += Math.PI / 2;
+                    distance += newRadius * 0.5;
+                    midX = (palA.body.position.x + palB.body.position.x) / 2 + Math.cos(angle) * distance;
+                    midY = (palA.body.position.y + palB.body.position.y) / 2 + Math.sin(angle) * distance;
+                    
+                    // Keep within game bounds
+                    midX = Math.max(newRadius, Math.min(midX, this.physicsEngine.canvasWidth - newRadius));
+                    midY = Math.max(this.gameState.selectionZoneHeight + newRadius, 
+                                  Math.min(midY, this.physicsEngine.canvasHeight - newRadius));
+                }
 
                 // Create smoke effect
                 const smokeEffect = new Smoke(midX, midY, Pal.TYPES[palA.type].radius);
