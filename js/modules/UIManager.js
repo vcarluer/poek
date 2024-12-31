@@ -32,10 +32,10 @@ export class UIManager {
         this.scoreElement.textContent = score;
     }
 
-    updateNextPal(nextType, images) {
+    updateNextPal(nextType, imageVariants) {
         const nextImg = this.nextPalElement.querySelector('img');
-        if (nextImg && images) {
-            nextImg.src = images[nextType].src;
+        if (nextImg && imageVariants && imageVariants[nextType]) {
+            nextImg.src = imageVariants[nextType].preview.src;
             nextImg.alt = nextType.charAt(0) + nextType.slice(1).toLowerCase();
         }
     }
@@ -56,8 +56,12 @@ export class UIManager {
 
             if (isDiscovered) {
                 // Update image source if needed
-                if (isNewlyDiscovered || img.src !== palData.image) {
-                    img.src = palData.image;
+                if (isNewlyDiscovered || !img.src.includes(type.toLowerCase())) {
+                    // Use the evolution variant for the evolution list
+                    const gameState = window.gameInstance?.gameState;
+                    if (gameState?.images?.[type]?.evolution) {
+                        img.src = gameState.images[type].evolution.src;
+                    }
                 }
 
                 // Add discovered class if not already present

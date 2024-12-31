@@ -61,32 +61,93 @@ export class Pal {
         return initialTypes[0];
     }
 
+    // Size constants for different display contexts
+    static PREVIEW_SIZE = 200;
+    static EVOLUTION_SIZE = 50;
+
+    static async processImage(sourceImage, size) {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        
+        // Clear canvas with transparency
+        ctx.clearRect(0, 0, size, size);
+        
+        // Create circular clipping path
+        ctx.beginPath();
+        const centerX = size / 2;
+        const centerY = size / 2;
+        const radius = size / 2;
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        
+        // Draw the image
+        ctx.drawImage(sourceImage, 0, 0, size, size);
+        
+        // Create a new image from the canvas
+        const processedImage = new Image();
+        processedImage.src = canvas.toDataURL('image/png');
+        
+        // Wait for the image to load
+        return new Promise((resolve, reject) => {
+            processedImage.onload = () => resolve(processedImage);
+            processedImage.onerror = reject;
+        });
+    }
+
     static loadImages() {
         return new Promise((resolve) => {
-            const images = {};
-            let loadedImages = 0;
-            const totalImages = Object.keys(Pal.TYPES).length;
+            const imageVariants = {};
+            let loadedTypes = 0;
+            const totalTypes = Object.keys(Pal.TYPES).length;
 
             for (const type in Pal.TYPES) {
-                images[type] = new Image();
-                images[type].onload = () => {
-                    loadedImages++;
-                    console.log(`Loaded image for ${type}`);
-                    if (loadedImages === totalImages) {
-                        console.log('All images loaded successfully');
-                        resolve(images);
+                imageVariants[type] = {};
+                const baseImage = new Image();
+                
+                baseImage.onload = async () => {
+                    try {
+                        // Create variants for different contexts
+                        const [preview, game, evolution] = await Promise.all([
+                            // Preview variant (fixed size)
+                            Pal.processImage(baseImage, Pal.PREVIEW_SIZE),
+                            // Game variant (based on pal radius)
+                            Pal.processImage(baseImage, Pal.TYPES[type].radius * 2),
+                            // Evolution variant (small fixed size)
+                            Pal.processImage(baseImage, Pal.EVOLUTION_SIZE)
+                        ]);
+
+                        imageVariants[type] = {
+                            preview,
+                            game,
+                            evolution
+                        };
+
+                        loadedTypes++;
+                        console.log(`Processed variants for ${type}`);
+                        
+                        if (loadedTypes === totalTypes) {
+                            console.log('All image variants processed successfully');
+                            resolve(imageVariants);
+                        }
+                    } catch (error) {
+                        console.error(`Error processing variants for ${type}:`, error);
                     }
                 };
-                images[type].onerror = (err) => {
+                
+                baseImage.onerror = (err) => {
                     console.error(`Failed to load image for ${type}:`, err);
                 };
-                images[type].src = Pal.TYPES[type].image;
+                
+                baseImage.src = Pal.TYPES[type].image;
                 console.log(`Loading image for ${type}: ${Pal.TYPES[type].image}`);
             }
         });
     }
 
-    constructor(x, y, type, world, images) {
+    constructor(x, y, type, world, imageVariants) {
         if (!window.Matter) {
             throw new Error('Matter.js not loaded');
         }
@@ -114,7 +175,8 @@ export class Pal {
         // Add the body to the world
         World.add(world, this.body);
 
-        this.image = images[type];
+        // Store image variants
+        this.imageVariants = imageVariants[type];
     }
 
     draw(ctx) {
@@ -148,7 +210,7 @@ export class Pal {
             ctx.shadowBlur = 0;
             
             // Draw Pal image if available
-            if (this.image && this.image.complete && this.image.naturalWidth > 0) {
+            if (this.imageVariants?.game && this.imageVariants.game.complete && this.imageVariants.game.naturalWidth > 0) {
                 try {
                     // Create circular clipping path
                     ctx.beginPath();
@@ -160,10 +222,10 @@ export class Pal {
                     const x = -radius;
                     const y = -radius;
                     
-                    // Draw the image with better quality
+                    // Draw the game-sized variant with better quality
                     ctx.imageSmoothingEnabled = true;
                     ctx.imageSmoothingQuality = 'high';
-                    ctx.drawImage(this.image, x, y, size, size);
+                    ctx.drawImage(this.imageVariants.game, x, y, size, size);
                 } catch (err) {
                     console.error('Error drawing Pal image:', err);
                 }

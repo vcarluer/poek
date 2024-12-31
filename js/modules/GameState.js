@@ -10,6 +10,11 @@ export class GameState {
         this.safetyMargin = 100; // Pixels of extra clearance needed before next drop
         this.recentMerges = []; // Track recent merges timestamps
         this.isJetragonSpinning = false; // Track if JetRagon spin animation is active
+        
+        // Make instance globally available for UI components
+        window.gameInstance = {
+            gameState: this
+        };
     }
 
     reset() {
@@ -26,8 +31,8 @@ export class GameState {
         this.images = null;
     }
 
-    setImages(images) {
-        this.images = images;
+    setImages(imageVariants) {
+        this.images = imageVariants;
     }
 
     updateScore(points) {
