@@ -1,17 +1,19 @@
+import { ImageCache, SIZES } from './modules/ImageCache.js';
+
 export class Pal {
     static TYPES = {
-        LAMBALL: { radius: 10, score: 2, next: 'CHIKIPI', image: 'assets/lamball.png', color: '#F8E8E8' },
-        CHIKIPI: { radius: 15, score: 4, next: 'FOXPARKS', image: 'assets/chikipi.png', color: '#FFE5B4' },
-        FOXPARKS: { radius: 21, score: 8, next: 'PENGULLET', image: 'assets/foxparks.png', color: '#FF7F50' },
-        PENGULLET: { radius: 31, score: 16, next: 'CATTIVA', image: 'assets/pengullet.png', color: '#87CEEB' },
-        CATTIVA: { radius: 45, score: 32, next: 'LIFMUNK', image: 'assets/cattiva.png', color: '#DDA0DD' },
-        LIFMUNK: { radius: 65, score: 64, next: 'FUACK', image: 'assets/lifmunk.png', color: '#90EE90' },
-        FUACK: { radius: 94, score: 128, next: 'ROOBY', image: 'assets/fuack.png', color: '#4682B4' },
-        ROOBY: { radius: 136, score: 256, next: 'ARSOX', image: 'assets/rooby.png', color: '#CD5C5C' },
-        ARSOX: { radius: 197, score: 512, next: 'MAU', image: 'assets/arsox.png', color: '#FF4500' },
-        MAU: { radius: 286, score: 768, next: 'VERDASH', image: 'assets/mau.png', color: '#9370DB' },
-        VERDASH: { radius: 340, score: 896, next: 'JETRAGON', image: 'assets/verdash.png', color: '#32CD32' },
-        JETRAGON: { radius: 393, score: 1024, next: null, image: 'assets/jetragon.png', color: '#4169E1' }
+        LAMBALL: { radius: 10, score: 2, next: 'CHIKIPI', name: 'lamball', color: '#F8E8E8' },
+        CHIKIPI: { radius: 15, score: 4, next: 'FOXPARKS', name: 'chikipi', color: '#FFE5B4' },
+        FOXPARKS: { radius: 21, score: 8, next: 'PENGULLET', name: 'foxparks', color: '#FF7F50' },
+        PENGULLET: { radius: 31, score: 16, next: 'CATTIVA', name: 'pengullet', color: '#87CEEB' },
+        CATTIVA: { radius: 45, score: 32, next: 'LIFMUNK', name: 'cattiva', color: '#DDA0DD' },
+        LIFMUNK: { radius: 65, score: 64, next: 'FUACK', name: 'lifmunk', color: '#90EE90' },
+        FUACK: { radius: 94, score: 128, next: 'ROOBY', name: 'fuack', color: '#4682B4' },
+        ROOBY: { radius: 136, score: 256, next: 'ARSOX', name: 'rooby', color: '#CD5C5C' },
+        ARSOX: { radius: 197, score: 512, next: 'MAU', name: 'arsox', color: '#FF4500' },
+        MAU: { radius: 286, score: 768, next: 'VERDASH', name: 'mau', color: '#9370DB' },
+        VERDASH: { radius: 340, score: 896, next: 'JETRAGON', name: 'verdash', color: '#32CD32' },
+        JETRAGON: { radius: 393, score: 1024, next: null, name: 'jetragon', color: '#4169E1' }
     };
 
     static calculateProbabilities() {
@@ -65,91 +67,47 @@ export class Pal {
     static PREVIEW_SIZE = 200;
     static EVOLUTION_SIZE = 50;
 
-    static async processImage(sourceImage, size) {
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext('2d');
+    static async loadImages(onProgress) {
+        // Initialize the image cache first
+        await ImageCache.initialize();
         
-        // Clear canvas with transparency
-        ctx.clearRect(0, 0, size, size);
+        const imageVariants = {};
+        const totalTypes = Object.keys(Pal.TYPES).length;
+        let loadedTypes = 0;
         
-        // Create circular clipping path
-        ctx.beginPath();
-        const centerX = size / 2;
-        const centerY = size / 2;
-        const radius = size / 2;
-        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        ctx.closePath();
-        ctx.clip();
-        
-        // Draw the image
-        ctx.drawImage(sourceImage, 0, 0, size, size);
-        
-        // Create a new image from the canvas
-        const processedImage = new Image();
-        processedImage.src = canvas.toDataURL('image/png');
-        
-        // Wait for the image to load
-        return new Promise((resolve, reject) => {
-            processedImage.onload = () => resolve(processedImage);
-            processedImage.onerror = reject;
-        });
-    }
-
-    static loadImages(onProgress) {
-        return new Promise((resolve) => {
-            const imageVariants = {};
-            let loadedTypes = 0;
-            let processedVariants = 0;
-            const totalTypes = Object.keys(Pal.TYPES).length;
-            const totalVariants = totalTypes * 3; // 3 variants per type
-
-            for (const type in Pal.TYPES) {
-                imageVariants[type] = {};
-                const baseImage = new Image();
+        for (const type in Pal.TYPES) {
+            const name = Pal.TYPES[type].name;
+            
+            try {
+                // Load all cached variants
+                const preview = new Image();
+                preview.src = ImageCache.getCachePath(name, 'large');
                 
-                baseImage.onload = async () => {
-                    try {
-                        // Process each variant sequentially to track progress
-                        const preview = await Pal.processImage(baseImage, Pal.PREVIEW_SIZE);
-                        processedVariants++;
-                        onProgress?.(Math.floor((processedVariants / totalVariants) * 100));
-
-                        const game = await Pal.processImage(baseImage, Pal.TYPES[type].radius * 2);
-                        processedVariants++;
-                        onProgress?.(Math.floor((processedVariants / totalVariants) * 100));
-
-                        const evolution = await Pal.processImage(baseImage, Pal.EVOLUTION_SIZE);
-                        processedVariants++;
-                        onProgress?.(Math.floor((processedVariants / totalVariants) * 100));
-
-                        imageVariants[type] = {
-                            preview,
-                            game,
-                            evolution
-                        };
-
-                        loadedTypes++;
-                        console.log(`Processed variants for ${type}`);
-                        
-                        if (loadedTypes === totalTypes) {
-                            console.log('All image variants processed successfully');
-                            resolve(imageVariants);
-                        }
-                    } catch (error) {
-                        console.error(`Error processing variants for ${type}:`, error);
-                    }
-                };
+                const game = new Image();
+                game.src = ImageCache.getCachePath(name, 'medium');
                 
-                baseImage.onerror = (err) => {
-                    console.error(`Failed to load image for ${type}:`, err);
-                };
+                const evolution = new Image();
+                evolution.src = ImageCache.getCachePath(name, 'small');
                 
-                baseImage.src = Pal.TYPES[type].image;
-                console.log(`Loading image for ${type}: ${Pal.TYPES[type].image}`);
+                // Wait for all images to load
+                await Promise.all([
+                    new Promise(resolve => preview.onload = resolve),
+                    new Promise(resolve => game.onload = resolve),
+                    new Promise(resolve => evolution.onload = resolve)
+                ]);
+                
+                imageVariants[type] = { preview, game, evolution };
+                loadedTypes++;
+                onProgress?.(Math.floor((loadedTypes / totalTypes) * 100));
+                
+                console.log(`Loaded cached variants for ${type}`);
+            } catch (error) {
+                console.error(`Error loading cached variants for ${type}:`, error);
             }
-        });
+        }
+        
+        console.log('All cached image variants loaded successfully');
+        return imageVariants;
     }
 
     constructor(x, y, type, world, imageVariants) {

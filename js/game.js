@@ -7,6 +7,7 @@ import { CollisionManager } from './modules/CollisionManager.js';
 import { PalManager } from './modules/PalManager.js';
 import { GameLoop } from './modules/GameLoop.js';
 import { Pal } from './pal.js';
+import { ImageCache } from './modules/ImageCache.js';
 
 // Wait for Matter.js to be available
 async function waitForMatter() {
@@ -124,8 +125,18 @@ class Game {
 
     async initialize() {
         try {
-            // Load Pal images with progress tracking
-            const images = await Pal.loadImages(progress => this.updateLoadingProgress(progress));
+            // Initialize image cache first
+            this.updateLoadingProgress(0);
+            console.log('Initializing image cache...');
+            await ImageCache.cacheAllImages();
+            this.updateLoadingProgress(50);
+            console.log('Image cache initialized');
+            
+            // Load cached images with progress tracking
+            const images = await Pal.loadImages(progress => {
+                // Scale progress from 50-100%
+                this.updateLoadingProgress(50 + Math.floor(progress / 2));
+            });
             console.log('Pal images loaded:', Object.keys(images));
             
             // Hide loading screen
