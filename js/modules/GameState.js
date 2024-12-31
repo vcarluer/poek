@@ -54,7 +54,14 @@ export class GameState {
         const palTop = this.lastDroppedPal.body.position.y - radius;
         
         // Check if the last dropped Pal has moved below the selection zone
-        return palTop > this.selectionZoneHeight;
+        const hasClearedZone = palTop > this.selectionZoneHeight;
+        
+        // Clear the lastDroppedPal reference once it's safely below
+        if (hasClearedZone) {
+            this.lastDroppedPal = null;
+        }
+        
+        return hasClearedZone;
     }
 
     checkGameOver(selectionZoneHeight) {
@@ -64,8 +71,8 @@ export class GameState {
         for (const pal of Array.from(this.pals)) {
             if (!pal.body || !this.pals.has(pal)) continue;
             
-            // Skip only the current selected Pal
-            if (pal === this.currentPal) continue;
+            // Skip the current selected Pal and last dropped Pal
+            if (pal === this.currentPal || pal === this.lastDroppedPal) continue;
             
             const radius = this.getPalRadius(pal.type);
             const palTop = pal.body.position.y - radius;
