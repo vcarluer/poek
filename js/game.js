@@ -106,11 +106,30 @@ class Game {
         }
     }
 
+    updateLoadingProgress(progress) {
+        const loadingBar = document.querySelector('.loading-bar');
+        const loadingProgress = document.querySelector('.loading-progress');
+        if (loadingBar && loadingProgress) {
+            loadingBar.style.width = `${progress}%`;
+            loadingProgress.textContent = `${progress}%`;
+        }
+    }
+
+    hideLoadingScreen() {
+        const loadingScreen = document.querySelector('.loading-screen');
+        if (loadingScreen) {
+            loadingScreen.classList.add('hidden');
+        }
+    }
+
     async initialize() {
         try {
-            // Load Pal images
-            const images = await Pal.loadImages();
+            // Load Pal images with progress tracking
+            const images = await Pal.loadImages(progress => this.updateLoadingProgress(progress));
             console.log('Pal images loaded:', Object.keys(images));
+            
+            // Hide loading screen
+            this.hideLoadingScreen();
             
             // Set images and initial next type
             this.gameState.setImages(images);

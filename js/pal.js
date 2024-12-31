@@ -97,11 +97,13 @@ export class Pal {
         });
     }
 
-    static loadImages() {
+    static loadImages(onProgress) {
         return new Promise((resolve) => {
             const imageVariants = {};
             let loadedTypes = 0;
+            let processedVariants = 0;
             const totalTypes = Object.keys(Pal.TYPES).length;
+            const totalVariants = totalTypes * 3; // 3 variants per type
 
             for (const type in Pal.TYPES) {
                 imageVariants[type] = {};
@@ -109,15 +111,18 @@ export class Pal {
                 
                 baseImage.onload = async () => {
                     try {
-                        // Create variants for different contexts
-                        const [preview, game, evolution] = await Promise.all([
-                            // Preview variant (fixed size)
-                            Pal.processImage(baseImage, Pal.PREVIEW_SIZE),
-                            // Game variant (based on pal radius)
-                            Pal.processImage(baseImage, Pal.TYPES[type].radius * 2),
-                            // Evolution variant (small fixed size)
-                            Pal.processImage(baseImage, Pal.EVOLUTION_SIZE)
-                        ]);
+                        // Process each variant sequentially to track progress
+                        const preview = await Pal.processImage(baseImage, Pal.PREVIEW_SIZE);
+                        processedVariants++;
+                        onProgress?.(Math.floor((processedVariants / totalVariants) * 100));
+
+                        const game = await Pal.processImage(baseImage, Pal.TYPES[type].radius * 2);
+                        processedVariants++;
+                        onProgress?.(Math.floor((processedVariants / totalVariants) * 100));
+
+                        const evolution = await Pal.processImage(baseImage, Pal.EVOLUTION_SIZE);
+                        processedVariants++;
+                        onProgress?.(Math.floor((processedVariants / totalVariants) * 100));
 
                         imageVariants[type] = {
                             preview,
