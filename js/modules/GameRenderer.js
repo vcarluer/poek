@@ -12,6 +12,7 @@ export class GameRenderer {
             desynchronized: false // Ensure synchronous rendering for better quality
         });
         this.selectionZoneHeight = selectionZoneHeight;
+        this.interpolationAlpha = 0;
         
         // Configure context for maximum image quality
         this.ctx.imageSmoothingEnabled = true;
@@ -68,8 +69,33 @@ export class GameRenderer {
         this.ctx.lineWidth = 1;
     }
 
+    setInterpolationAlpha(alpha) {
+        this.interpolationAlpha = alpha;
+    }
+
+    interpolatePosition(prev, curr) {
+        return {
+            x: prev.x + (curr.x - prev.x) * this.interpolationAlpha,
+            y: prev.y + (curr.y - prev.y) * this.interpolationAlpha
+        };
+    }
+
     drawPals(pals) {
-        pals.forEach(pal => pal.draw(this.ctx));
+        pals.forEach(pal => {
+            const prevPos = pal.body.positionPrev;
+            const currPos = pal.body.position;
+            const interpolatedPos = this.interpolatePosition(prevPos, currPos);
+            
+            // Save current position
+            const originalPos = { ...pal.body.position };
+            
+            // Temporarily set position to interpolated position for drawing
+            pal.body.position = interpolatedPos;
+            pal.draw(this.ctx);
+            
+            // Restore original position
+            pal.body.position = originalPos;
+        });
     }
 
     drawSmokeEffects(smokeEffects) {

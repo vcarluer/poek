@@ -7,6 +7,12 @@ export class GameLoop {
         this.isRunning = false;
         this.animationFrameId = null;
         this.boundLoop = this.loop.bind(this);
+        
+        // Fixed timestep for physics (60 FPS)
+        this.fixedTimeStep = 1000 / 60;
+        this.lastTime = 0;
+        this.accumulator = 0;
+        this.alpha = 0;
     }
 
     start() {
@@ -24,7 +30,7 @@ export class GameLoop {
         }
     }
 
-    loop() {
+    loop(currentTime = 0) {
         // Don't continue if stopped
         if (!this.isRunning) return;
 
@@ -34,13 +40,37 @@ export class GameLoop {
         // Don't update if game is over
         if (this.gameState.isGameOver()) return;
 
-        // Update physics
-        this.physics.update();
-        
+        // Calculate time delta
+        if (this.lastTime === 0) {
+            this.lastTime = currentTime;
+            return;
+        }
+
+        let frameTime = currentTime - this.lastTime;
+        this.lastTime = currentTime;
+
+        // Prevent spiral of death
+        if (frameTime > 250) {
+            frameTime = 250;
+        }
+
+        // Accumulate time for physics updates
+        this.accumulator += frameTime;
+
+        // Update physics with fixed timestep
+        while (this.accumulator >= this.fixedTimeStep) {
+            this.physics.update();
+            this.accumulator -= this.fixedTimeStep;
+        }
+
+        // Calculate interpolation alpha
+        this.alpha = this.accumulator / this.fixedTimeStep;
+
         // Clear and prepare canvas
         this.renderer.clearCanvas();
         
-        // Draw game elements
+        // Draw game elements with interpolation
+        this.renderer.setInterpolationAlpha(this.alpha);
         this.renderer.drawWalls(this.physics.getWalls());
         this.renderer.drawAimingLine(this.gameState.getCurrentPal());
         this.renderer.drawPals(this.gameState.getPals());
