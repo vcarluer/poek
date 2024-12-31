@@ -81,6 +81,16 @@ export class GameLoop {
 
         // Check for new Pal creation
         this.palManager.checkForNewPal();
+
+        // Check for game over conditions
+        if (this.gameState.checkGameOver(this.gameState.selectionZoneHeight)) {
+            const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
+            this.gameState.uiManager.showGameOverScreen(
+                this.gameState.getScore(),
+                this.gameState.getHighScore(),
+                screenshot
+            );
+        }
     }
 
     restart() {
