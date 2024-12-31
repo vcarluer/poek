@@ -86,14 +86,13 @@ class ImageCacheGenerator {
     static async cacheImage(sourcePath) {
         const imageName = path.basename(sourcePath, '.png').toLowerCase();
         console.log(`\nProcessing ${imageName}...`);
-        console.log(`Available exact sizes: ${Object.keys(SIZES).filter(key => !['small', 'medium', 'large', 'xlarge'].includes(key)).join(', ')}`);
         
         // Process and cache standard UI sizes
         const standardSizes = {
-            small: SIZES.small,
-            medium: SIZES.medium,
-            large: SIZES.large,
-            xlarge: SIZES.xlarge
+            small: SIZES.small,     // 64px for evolution display
+            medium: SIZES.medium,   // 128px for small game circles
+            large: SIZES.large,     // 256px for preview
+            xlarge: SIZES.xlarge    // 512px for game display
         };
         
         // Cache standard sizes
@@ -103,20 +102,6 @@ class ImageCacheGenerator {
             const buffer = await this.processImage(sourcePath, size);
             fs.writeFileSync(cachePath, buffer);
             this.copyToWww(cachePath);
-        }
-        
-        // Cache exact size if this is a Pal image
-        console.log(`Checking for exact size for ${imageName}...`);
-        if (SIZES[imageName]) {
-            console.log(`Found exact size ${SIZES[imageName]}px for ${imageName}`);
-            const exactSize = SIZES[imageName];
-            const cachePath = this.getCachePath(imageName, `exact-${exactSize}`);
-            console.log(`Generating exact size (${exactSize}px) at ${cachePath}`);
-            const buffer = await this.processImage(sourcePath, exactSize);
-            fs.writeFileSync(cachePath, buffer);
-            this.copyToWww(cachePath);
-        } else {
-            console.log(`No exact size found for ${imageName}`);
         }
     }
 

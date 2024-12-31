@@ -1,9 +1,12 @@
 export const SIZES = {
+    // Image sizes for different display contexts
     small: 64,    // For evolution display (50px)
     medium: 128,  // For small game circles
     large: 256,   // For preview (200px)
-    xlarge: 512,  // For large game circles
-    // Exact sizes for each Pal type (diameter = radius * 2)
+    xlarge: 512,  // For game display (all Pals)
+
+    // Physics sizes for each Pal type (diameter = radius * 2)
+    // These values are used for collision detection and physics calculations
     lamball: 20,      // radius: 10
     chikipi: 30,      // radius: 15
     foxparks: 42,     // radius: 21
