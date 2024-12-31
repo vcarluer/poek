@@ -168,10 +168,6 @@ export class CollisionManager {
                     });
                 }
 
-                // Check for game over after fusion
-                requestAnimationFrame(() => {
-                    this.gameState.checkGameOver(this.gameState.selectionZoneHeight);
-                });
             }
         } catch (error) {
             console.error('Error in handlePalMerge:', error);

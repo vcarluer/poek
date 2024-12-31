@@ -82,12 +82,6 @@ export class GameState {
             // Check if any non-static Pal is above the selection zone line
             if (!pal.body.isStatic && palTop <= selectionZoneHeight && pal.hasHadContact) {
                 this.gameOver = true;
-                const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
-                this.uiManager.showGameOverScreen(
-                    this.score,
-                    this.highScore,
-                    screenshot
-                );
                 return true;
             }
         }
