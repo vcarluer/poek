@@ -16,8 +16,14 @@ export class CollisionManager {
             event.pairs.forEach(pair => {
                 const { bodyA, bodyB } = pair;
                 
-                // Skip if either body is a wall
-                if (this.physicsEngine.getWalls().some(wall => wall === bodyA || wall === bodyB)) return;
+                // If either body is a wall, skip further processing but mark Pal as having contact
+                if (this.physicsEngine.getWalls().some(wall => wall === bodyA || wall === bodyB)) {
+                    const pal = Array.from(this.gameState.getPals()).find(p => p.body === bodyA || p.body === bodyB);
+                    if (pal && !pal.body.isStatic) {
+                        pal.hasHadContact = true;
+                    }
+                    return;
+                }
 
                 // Find the Pals involved in the collision
                 const palA = Array.from(this.gameState.getPals()).find(p => p.body === bodyA);
@@ -26,11 +32,13 @@ export class CollisionManager {
                 // Skip if either Pal is not found or is already being processed
                 if (!palA || !palB || palA.isProcessing || palB.isProcessing) return;
 
-                // Mark both Pals as having had contact
-                palA.hasHadContact = true;
-                palB.hasHadContact = true;
+                // Mark both Pals as having had contact for any non-static collision
+                if (!palA.body.isStatic && !palB.body.isStatic) {
+                    palA.hasHadContact = true;
+                    palB.hasHadContact = true;
+                }
 
-                // Skip collision if either Pal is static (in drop zone)
+                // Handle merging only for same type non-static Pals
                 if (palA.type === palB.type && !palA.body.isStatic && !palB.body.isStatic) {
                     // Mark Pals as being processed to prevent duplicate merges
                     palA.isProcessing = true;
@@ -112,6 +120,9 @@ export class CollisionManager {
                     this.physicsEngine.world,
                     this.gameState.images
                 );
+                
+                // Inherit contact state from parent Pals
+                fusedPal.hasHadContact = true;
 
                 // Add new Pal first
                 this.gameState.addPal(fusedPal);

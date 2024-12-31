@@ -79,11 +79,8 @@ export class GameState {
             const palBottom = pal.body.position.y + radius;
             const palVelocity = Math.abs(pal.body.velocity.y);
             
-            // Only check Pals that have had contact with others
-            if (!pal.hasHadContact) continue;
-
             // Check if any non-static Pal is above the selection zone line
-            if (!pal.body.isStatic && palTop <= selectionZoneHeight) {
+            if (!pal.body.isStatic && palTop <= selectionZoneHeight && pal.hasHadContact) {
                 this.gameOver = true;
                 return true;
             }
