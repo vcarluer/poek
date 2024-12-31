@@ -97,11 +97,15 @@ export class Pal {
         this.isGlowing = false;
         const { radius } = Pal.TYPES[type];
         
-        // Create the Matter.js body with adjusted physics properties
+        // Create the Matter.js body with size-proportional density
+        // Using quadratic scaling to make larger Pals significantly heavier
+        const baseDensity = 0.001;
+        const density = baseDensity * Math.pow(radius / 10, 2); // Quadratic scaling relative to smallest Pal
+        
         this.body = Bodies.circle(x, y, radius, {
-            restitution: 0.4, // Increased bounciness for better rolling
-            friction: 0.3, // Reduced friction to roll better
-            density: 0.005, // Increased mass
+            restitution: 0.3, // Slightly reduced bounciness for more stable stacking
+            friction: 0.4, // Increased friction for better stability
+            density: density, // Density scales with size
             label: type,
             slop: 0.05, // Reduce jittering
             // Removed inertia: Infinity to allow rotation
