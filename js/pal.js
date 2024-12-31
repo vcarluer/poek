@@ -80,6 +80,7 @@ export class Pal {
         
         this.type = type;
         this.isGlowing = false;
+        this.timeAboveLine = 0; // Initialize time tracking for game over detection
         const { radius } = Pal.TYPES[type];
         
         // Create the Matter.js body with size-proportional density

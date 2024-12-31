@@ -79,21 +79,22 @@ export class GameState {
             const palBottom = pal.body.position.y + radius;
             const palVelocity = Math.abs(pal.body.velocity.y);
             
-            // Debug log for Pal positions
-            console.log(`Checking Pal ${pal.type}:`, {
-                palTop,
-                selectionZoneHeight,
-                isStatic: pal.body.isStatic,
-                position: pal.body.position,
-                velocity: pal.body.velocity
-            });
-
             // Check if any non-static Pal is above the selection zone line
-            if (!pal.body.isStatic && 
-                palTop <= selectionZoneHeight && 
-                Math.abs(pal.body.velocity.y) < 15) { // Allow more movement before triggering game over
-                this.gameOver = true;
-                return true;
+            if (!pal.body.isStatic && palTop <= selectionZoneHeight) {
+                // If this is the first time we've seen this Pal above the line
+                if (!pal.timeAboveLine) {
+                    pal.timeAboveLine = Date.now();
+                    return false;
+                }
+                
+                // If the Pal has been above the line for more than 100ms
+                if (Date.now() - pal.timeAboveLine > 100) {
+                    this.gameOver = true;
+                    return true;
+                }
+            } else {
+                // Reset the timer if the Pal moves back below the line
+                pal.timeAboveLine = 0;
             }
         }
         
