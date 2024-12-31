@@ -62,12 +62,6 @@ export class GameLoop {
         
         // Check for game over after physics update
         if (this.gameState.checkGameOver(this.gameState.selectionZoneHeight)) {
-            const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
-            this.gameState.uiManager.showGameOverScreen(
-                this.gameState.getScore(),
-                this.gameState.getHighScore(),
-                screenshot
-            );
             return; // Exit immediately when game over is detected
         }
 

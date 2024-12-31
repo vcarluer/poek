@@ -170,14 +170,7 @@ export class CollisionManager {
 
                 // Check for game over after fusion
                 requestAnimationFrame(() => {
-                    if (this.gameState.checkGameOver(this.gameState.selectionZoneHeight)) {
-                        const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
-                        this.uiManager.showGameOverScreen(
-                            this.gameState.getScore(),
-                            this.gameState.getHighScore(),
-                            screenshot
-                        );
-                    }
+                    this.gameState.checkGameOver(this.gameState.selectionZoneHeight);
                 });
             }
         } catch (error) {
