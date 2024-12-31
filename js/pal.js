@@ -136,19 +136,21 @@ export class Pal {
             // Draw Pal image if available
             if (this.imageVariants?.game && this.imageVariants.game.complete && this.imageVariants.game.naturalWidth > 0) {
                 try {
-                    // Create circular clipping path
+                    // Configure for high-quality rendering
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    
+                    // Create circular clipping path with anti-aliasing
                     ctx.beginPath();
                     ctx.arc(0, 0, radius - 2, 0, Math.PI * 2);
                     ctx.clip();
                     
-                    // Calculate size to fill the circle (2x radius for better fit)
-                    const size = radius * 2;
+                    // Use exact-sized image variant, positioned at center
                     const x = -radius;
                     const y = -radius;
+                    const size = radius * 2;
                     
-                    // Draw the game-sized variant with better quality
-                    ctx.imageSmoothingEnabled = true;
-                    ctx.imageSmoothingQuality = 'high';
+                    // Draw the image with explicit dimensions to ensure proper rendering
                     ctx.drawImage(this.imageVariants.game, x, y, size, size);
                 } catch (err) {
                     console.error('Error drawing Pal image:', err);

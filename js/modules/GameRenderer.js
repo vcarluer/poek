@@ -1,13 +1,19 @@
 export class GameRenderer {
     constructor(canvas, selectionZoneHeight) {
         this.canvas = canvas;
+        
+        // Configure canvas for optimal rendering
+        this.canvas.style.imageRendering = 'high-quality';
+        
+        // Get context with optimal settings
         this.ctx = canvas.getContext('2d', {
             alpha: false,
-            willReadFrequently: true
+            willReadFrequently: true,
+            desynchronized: false // Ensure synchronous rendering for better quality
         });
         this.selectionZoneHeight = selectionZoneHeight;
         
-        // Configure context for better image quality
+        // Configure context for maximum image quality
         this.ctx.imageSmoothingEnabled = true;
         this.ctx.imageSmoothingQuality = 'high';
 
@@ -81,8 +87,9 @@ export class GameRenderer {
     }
 
     reset() {
-        // Reset canvas state
+        // Reset canvas state while maintaining high quality
         this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        this.canvas.style.imageRendering = 'high-quality';
         this.ctx.imageSmoothingEnabled = true;
         this.ctx.imageSmoothingQuality = 'high';
         this.clearCanvas();

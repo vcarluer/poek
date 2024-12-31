@@ -7,19 +7,24 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const CACHE_DIR = path.join(__dirname, '..', '..', 'assets', 'cache');
-const SIZES = {
-    small: 64,    // For UI elements
-    medium: 128,  // For game circles
-    large: 256,   // For evolution display
-    xlarge: 512   // For high-res displays
-};
+import { SIZES } from './ImageSizes.js';
 
 class ImageCacheGenerator {
     static async initialize() {
-        // Ensure cache directory exists
-        if (!fs.existsSync(CACHE_DIR)) {
-            fs.mkdirSync(CACHE_DIR, { recursive: true });
-        }
+        // Ensure cache directories exist
+        const WWW_CACHE_DIR = path.join(__dirname, '..', '..', 'www', 'assets', 'cache');
+        [CACHE_DIR, WWW_CACHE_DIR].forEach(dir => {
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
+        });
+    }
+
+    static copyToWww(sourcePath) {
+        const WWW_CACHE_DIR = path.join(__dirname, '..', '..', 'www', 'assets', 'cache');
+        const fileName = path.basename(sourcePath);
+        const wwwPath = path.join(WWW_CACHE_DIR, fileName);
+        fs.copyFileSync(sourcePath, wwwPath);
     }
 
     static getCachePath(imageName, size) {
@@ -29,11 +34,23 @@ class ImageCacheGenerator {
     static async processImage(sourcePath, targetSize) {
         const image = await loadImage(sourcePath);
         
-        // Create canvas with target dimensions
+        // Create an intermediate canvas at 2x size for better downscaling
+        const intermediateSize = Math.max(targetSize * 2, image.width, image.height);
+        const intermediateCanvas = createCanvas(intermediateSize, intermediateSize);
+        const intermediateCtx = intermediateCanvas.getContext('2d');
+        
+        // Enable high-quality image scaling for intermediate step
+        intermediateCtx.imageSmoothingEnabled = true;
+        intermediateCtx.imageSmoothingQuality = 'high';
+        
+        // Draw the image at intermediate size first
+        intermediateCtx.drawImage(image, 0, 0, intermediateSize, intermediateSize);
+        
+        // Create final canvas
         const canvas = createCanvas(targetSize, targetSize);
         const ctx = canvas.getContext('2d');
         
-        // Enable high-quality image scaling
+        // Enable high-quality image scaling for final step
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
         
@@ -54,9 +71,9 @@ class ImageCacheGenerator {
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 1;
         
-        // Clip and draw
+        // Clip and draw from intermediate canvas
         ctx.clip();
-        ctx.drawImage(image, 0, 0, targetSize, targetSize);
+        ctx.drawImage(intermediateCanvas, 0, 0, targetSize, targetSize);
         
         // Add a subtle border
         ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
@@ -67,30 +84,83 @@ class ImageCacheGenerator {
     }
 
     static async cacheImage(sourcePath) {
-        const imageName = path.basename(sourcePath, '.png');
+        const imageName = path.basename(sourcePath, '.png').toLowerCase();
+        console.log(`\nProcessing ${imageName}...`);
+        console.log(`Available exact sizes: ${Object.keys(SIZES).filter(key => !['small', 'medium', 'large', 'xlarge'].includes(key)).join(', ')}`);
         
-        // Process and cache each size
-        for (const [sizeName, size] of Object.entries(SIZES)) {
+        // Process and cache standard UI sizes
+        const standardSizes = {
+            small: SIZES.small,
+            medium: SIZES.medium,
+            large: SIZES.large,
+            xlarge: SIZES.xlarge
+        };
+        
+        // Cache standard sizes
+        for (const [sizeName, size] of Object.entries(standardSizes)) {
             const cachePath = this.getCachePath(imageName, sizeName);
+            console.log(`Generating ${sizeName} size (${size}px) at ${cachePath}`);
             const buffer = await this.processImage(sourcePath, size);
             fs.writeFileSync(cachePath, buffer);
+            this.copyToWww(cachePath);
+        }
+        
+        // Cache exact size if this is a Pal image
+        console.log(`Checking for exact size for ${imageName}...`);
+        if (SIZES[imageName]) {
+            console.log(`Found exact size ${SIZES[imageName]}px for ${imageName}`);
+            const exactSize = SIZES[imageName];
+            const cachePath = this.getCachePath(imageName, `exact-${exactSize}`);
+            console.log(`Generating exact size (${exactSize}px) at ${cachePath}`);
+            const buffer = await this.processImage(sourcePath, exactSize);
+            fs.writeFileSync(cachePath, buffer);
+            this.copyToWww(cachePath);
+        } else {
+            console.log(`No exact size found for ${imageName}`);
         }
     }
 
     static async cacheAllImages() {
         await this.initialize();
         
-        const assetsDir = path.join(__dirname, '..', '..', 'assets');
+        const assetsDir = path.resolve(__dirname, '..', '..', 'assets');
+        console.log(`Assets directory: ${assetsDir}`);
         const files = fs.readdirSync(assetsDir);
         
         for (const file of files) {
             if (file.endsWith('.png') && !file.includes('-')) {
                 const imagePath = path.join(assetsDir, file);
-                await this.cacheImage(imagePath);
-                console.log(`Cached all sizes for ${file}`);
+                try {
+                    console.log('\n=== Processing file ===');
+                    console.log(`File: ${file}`);
+                    console.log(`Full path: ${imagePath}`);
+                    console.log(`File exists: ${fs.existsSync(imagePath)}`);
+                    await this.cacheImage(imagePath);
+                    console.log(`Cached all sizes for ${file}`);
+                } catch (error) {
+                    console.log(`Error caching ${file}: ${error}`);
+                }
             }
+        }
+    }
+
+    static async main() {
+        try {
+            console.log('Starting image cache generation...');
+            console.log(`Cache directory: ${CACHE_DIR}`);
+            console.log(`Available sizes: ${JSON.stringify(SIZES, null, 2)}`);
+            await this.cacheAllImages();
+            console.log('Image cache generation complete!');
+        } catch (error) {
+            console.log(`Error during image cache generation: ${error}`);
+            process.exit(1);
         }
     }
 }
 
-export { ImageCacheGenerator, SIZES };
+// Run the generator if this file is being executed directly
+if (process.argv[1] && process.argv[1].endsWith('ImageCacheGenerator.js')) {
+    ImageCacheGenerator.main();
+}
+
+export { ImageCacheGenerator };
