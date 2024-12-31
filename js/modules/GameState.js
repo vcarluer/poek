@@ -79,8 +79,19 @@ export class GameState {
             const palBottom = pal.body.position.y + radius;
             const palVelocity = Math.abs(pal.body.velocity.y);
             
-            // Check if the highest point of the Pal is above the selection zone line
-            if (!pal.body.isStatic && palTop <= selectionZoneHeight) {
+            // Debug log for Pal positions
+            console.log(`Checking Pal ${pal.type}:`, {
+                palTop,
+                selectionZoneHeight,
+                isStatic: pal.body.isStatic,
+                position: pal.body.position,
+                velocity: pal.body.velocity
+            });
+
+            // Check if any non-static Pal is above the selection zone line
+            if (!pal.body.isStatic && 
+                palTop <= selectionZoneHeight && 
+                Math.abs(pal.body.velocity.y) < 15) { // Allow more movement before triggering game over
                 this.gameOver = true;
                 return true;
             }

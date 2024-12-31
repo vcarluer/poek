@@ -82,7 +82,7 @@ export class GameLoop {
         // Check for new Pal creation
         this.palManager.checkForNewPal();
 
-        // Check for game over conditions
+        // Check for game over after all updates are complete
         if (this.gameState.checkGameOver(this.gameState.selectionZoneHeight)) {
             const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
             this.gameState.uiManager.showGameOverScreen(
@@ -90,6 +90,7 @@ export class GameLoop {
                 this.gameState.getHighScore(),
                 screenshot
             );
+            return; // Exit the loop immediately when game over is detected
         }
     }
 
