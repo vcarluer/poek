@@ -8,6 +8,24 @@ export class UIManager {
             'LAMBALL', 'CHIKIPI', 'FOXPARKS', 'PENGULLET', 'CATTIVA',
             'LIFMUNK', 'FUACK', 'ROOBY', 'ARSOX', 'MAU', 'VERDASH', 'JETRAGON'
         ];
+        this.initializeEvolutionList();
+    }
+
+    initializeEvolutionList() {
+        const circles = document.querySelectorAll('.pal-circle');
+        circles.forEach((circle, index) => {
+            const type = this.evolutionOrder[index];
+            
+            // Create and append image element
+            const img = document.createElement('img');
+            img.alt = type;
+            circle.appendChild(img);
+
+            // Create and append question mark span
+            const questionMark = document.createElement('span');
+            questionMark.textContent = '?';
+            circle.appendChild(questionMark);
+        });
     }
 
     updateScore(score) {
@@ -27,39 +45,37 @@ export class UIManager {
         circles.forEach((circle, index) => {
             const type = this.evolutionOrder[index];
             const palData = palTypes[type];
-            const wasDiscovered = circle.querySelector('img') !== null;
-            const isNewlyDiscovered = discoveredPals.has(type) && !wasDiscovered;
+            const img = circle.querySelector('img');
+            const isDiscovered = discoveredPals.has(type);
+            const wasDiscovered = circle.classList.contains('discovered');
+            const isNewlyDiscovered = isDiscovered && !wasDiscovered;
             const isSameAsMerged = type === mergedType && wasDiscovered;
-            
-            // Clear previous content
-            circle.innerHTML = '';
-            
-            if (discoveredPals.has(type)) {
-                // Show Pal image
-                circle.style.backgroundColor = palData.color;
-                const img = document.createElement('img');
-                img.src = palData.image;
-                img.alt = type;
-                
-                // Add animation classes based on conditions
+
+            // Set color as CSS custom property
+            circle.style.setProperty('--pal-color', palData.color);
+
+            if (isDiscovered) {
+                // Update image source if needed
+                if (isNewlyDiscovered || img.src !== palData.image) {
+                    img.src = palData.image;
+                }
+
+                // Add discovered class if not already present
+                if (!wasDiscovered) {
+                    circle.classList.add('discovered');
+                }
+
+                // Add animation classes if needed
                 if (isNewlyDiscovered) {
                     img.classList.add('bounce-in');
                 } else if (isSameAsMerged) {
                     img.classList.add('rotate-once');
                 }
-                
-                circle.appendChild(img);
             } else {
-                // Show question mark
-                circle.style.backgroundColor = 'rgba(44, 62, 80, 0.6)';
-                const questionMark = document.createElement('span');
-                questionMark.textContent = '?';
-                questionMark.style.color = '#ecf0f1';
-                questionMark.style.fontSize = '20px';
-                questionMark.style.fontWeight = 'bold';
-                questionMark.style.position = 'relative';
-                questionMark.style.zIndex = '1';
-                circle.appendChild(questionMark);
+                // Remove discovered class if present
+                circle.classList.remove('discovered');
+                // Remove any animation classes
+                img.classList.remove('bounce-in', 'rotate-once');
             }
         });
     }
@@ -72,11 +88,9 @@ export class UIManager {
         const highScoreValue = currentHighScore.querySelector('.high-score-value');
         const newHighScoreDisplay = this.gameOverScreen.querySelector('.new-high-score');
         
-        // Update score display
         scoreDisplay.textContent = score;
         screenshotImg.src = screenshot;
         
-        // Check for new high score
         if (score > highScore) {
             newHighScoreDisplay.style.display = 'block';
             currentHighScore.style.display = 'none';
@@ -88,7 +102,6 @@ export class UIManager {
             highScoreValue.textContent = highScore;
         }
         
-        // Show the game over screen
         this.gameOverScreen.classList.add('active');
     }
 
@@ -102,15 +115,12 @@ export class UIManager {
         this.testButton = document.getElementById('test-game-over');
         
         if (isDev && container && this.testButton) {
-            // Show container
             container.style.display = 'flex';
             container.style.gap = '10px';
             
-            // Setup game over test button
             this.testButtonCallback = callback;
             this.testButton.addEventListener('click', this.testButtonCallback);
             
-            // Setup spin test button
             const spinButton = document.getElementById('test-spin');
             if (spinButton) {
                 spinButton.addEventListener('click', () => this.spinJetragon());
@@ -132,17 +142,12 @@ export class UIManager {
             if (!this.jetragonImage) return;
         }
 
-        // Remove any existing animation classes
         this.jetragonImage.classList.remove('spin', 'golden-glow', 'spin-and-glow');
-        
-        // Force reflow
         void this.jetragonImage.offsetWidth;
         
-        // Add appropriate animation class
         const animationClass = withGlow ? 'spin-and-glow' : 'spin';
         this.jetragonImage.classList.add(animationClass);
 
-        // For spin animation only, listen for animation end
         if (!withGlow) {
             const handleSpinEnd = () => {
                 this.jetragonImage.classList.remove('spin');
@@ -151,17 +156,15 @@ export class UIManager {
             };
             this.jetragonImage.addEventListener('animationend', handleSpinEnd);
         } else {
-            // For spin-and-glow, keep glowing after spin ends
             const handleSpinAndGlowEnd = () => {
                 this.jetragonImage.classList.remove('spin-and-glow');
                 this.jetragonImage.classList.add('golden-glow');
                 this.jetragonImage.removeEventListener('animationend', handleSpinAndGlowEnd);
                 
-                // Set timeout for extended glow duration (8s total)
                 setTimeout(() => {
                     this.jetragonImage.classList.remove('golden-glow');
                     if (onComplete) onComplete();
-                }, 4000); // Additional 4s after the spin-and-glow
+                }, 4000);
             };
             this.jetragonImage.addEventListener('animationend', handleSpinAndGlowEnd);
         }
@@ -173,21 +176,14 @@ export class UIManager {
             if (!this.jetragonImage) return;
         }
 
-        // If already has spin-and-glow, don't add additional glow
         if (this.jetragonImage.classList.contains('spin-and-glow')) {
             return;
         }
 
-        // Remove any existing glow class
         this.jetragonImage.classList.remove('golden-glow');
-        
-        // Force reflow
         void this.jetragonImage.offsetWidth;
-        
-        // Add glow class to trigger animation
         this.jetragonImage.classList.add('golden-glow');
 
-        // Set timeout for extended glow duration
         setTimeout(() => {
             this.jetragonImage.classList.remove('golden-glow');
             if (onComplete) onComplete();
@@ -195,7 +191,6 @@ export class UIManager {
     }
 
     cleanup() {
-        // Remove event listeners
         if (this.testButton && this.testButtonCallback) {
             this.testButton.removeEventListener('click', this.testButtonCallback);
         }
@@ -203,7 +198,6 @@ export class UIManager {
             this.restartButton.removeEventListener('click', this.restartButtonCallback);
         }
 
-        // Reset UI state
         this.hideGameOverScreen();
         if (this.scoreElement) {
             this.scoreElement.textContent = '0';
@@ -216,7 +210,6 @@ export class UIManager {
             }
         }
 
-        // Clear references
         this.testButtonCallback = null;
         this.restartButtonCallback = null;
     }

@@ -31,8 +31,7 @@ export class PalManager {
         
         // Set next Pal type
         this.gameState.setNextType(Pal.getRandomInitialType());
-        this.uiManager.updateNextPal(this.gameState.getNextType(), this.gameState.images);
-        this.uiManager.updateEvolutionList(this.gameState.getDiscoveredPals(), Pal.TYPES);
+        this.updateUI();
     }
 
     dropCurrentPal(x) {
@@ -44,15 +43,31 @@ export class PalManager {
         const maxX = this.canvas.width - radius - 10;
         const constrainedX = Math.max(minX, Math.min(maxX, x));
         
+        // Update position first
         this.physics.setPosition(currentPal.body, {
             x: constrainedX,
             y: currentPal.body.position.y
         });
         
-        this.physics.setStatic(currentPal.body, false);
+        // Update game state
         this.gameState.setLastDroppedPal(currentPal);
         this.gameState.setLastDropTime(Date.now());
-        this.gameState.setCurrentPal(null);
+        
+        // Update UI before changing physics state
+        this.updateUI();
+        
+        // Make the Pal dynamic after UI update
+        requestAnimationFrame(() => {
+            this.physics.setStatic(currentPal.body, false);
+            this.gameState.setCurrentPal(null);
+        });
+    }
+
+    updateUI() {
+        // Update next Pal preview
+        this.uiManager.updateNextPal(this.gameState.getNextType(), this.gameState.images);
+        // Update evolution list
+        this.uiManager.updateEvolutionList(this.gameState.getDiscoveredPals(), Pal.TYPES);
     }
 
     checkForNewPal() {
