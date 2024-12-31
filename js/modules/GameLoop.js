@@ -60,6 +60,18 @@ export class GameLoop {
         // Update physics with fixed timestep
         while (this.accumulator >= this.fixedTimeStep) {
             this.physics.update();
+            
+            // Check for game over after each physics update
+            if (this.gameState.checkGameOver(this.gameState.selectionZoneHeight)) {
+                const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
+                this.gameState.uiManager.showGameOverScreen(
+                    this.gameState.getScore(),
+                    this.gameState.getHighScore(),
+                    screenshot
+                );
+                return; // Exit immediately when game over is detected
+            }
+            
             this.accumulator -= this.fixedTimeStep;
         }
 
@@ -81,17 +93,6 @@ export class GameLoop {
 
         // Check for new Pal creation
         this.palManager.checkForNewPal();
-
-        // Check for game over after all updates are complete
-        if (this.gameState.checkGameOver(this.gameState.selectionZoneHeight)) {
-            const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
-            this.gameState.uiManager.showGameOverScreen(
-                this.gameState.getScore(),
-                this.gameState.getHighScore(),
-                screenshot
-            );
-            return; // Exit the loop immediately when game over is detected
-        }
     }
 
     restart() {

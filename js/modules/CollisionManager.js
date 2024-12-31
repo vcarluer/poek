@@ -26,6 +26,10 @@ export class CollisionManager {
                 // Skip if either Pal is not found or is already being processed
                 if (!palA || !palB || palA.isProcessing || palB.isProcessing) return;
 
+                // Mark both Pals as having had contact
+                palA.hasHadContact = true;
+                palB.hasHadContact = true;
+
                 // Skip collision if either Pal is static (in drop zone)
                 if (palA.type === palB.type && !palA.body.isStatic && !palB.body.isStatic) {
                     // Mark Pals as being processed to prevent duplicate merges
