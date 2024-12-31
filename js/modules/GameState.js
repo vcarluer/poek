@@ -29,6 +29,8 @@ export class GameState {
         this.nextType = null;
         this.smokeEffects = [];
         this.images = null;
+        this.recentMerges = []; // Reset merge tracking
+        this.isJetragonSpinning = false; // Reset Jetragon animation state
     }
 
     setImages(imageVariants) {

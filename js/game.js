@@ -196,6 +196,7 @@ class Game {
             if (images) {
                 this.gameState.setImages(images);
                 this.gameState.setNextType(Pal.getRandomInitialType());
+                this.uiManager.initializeEvolutionList(); // Reinitialize evolution list
                 this.uiManager.updateNextPal(this.gameState.getNextType(), images);
                 this.uiManager.updateEvolutionList(this.gameState.getDiscoveredPals(), Pal.TYPES);
             }

@@ -60,6 +60,9 @@ export class UIManager {
     initializeEvolutionList() {
         const circles = document.querySelectorAll('.pal-circle');
         circles.forEach((circle, index) => {
+            // Clear any existing content
+            circle.innerHTML = '';
+            
             const type = this.evolutionOrder[index];
             
             // Create and append image element
@@ -264,6 +267,13 @@ export class UIManager {
                 nextImg.alt = '';
             }
         }
+
+        // Reset evolution list UI
+        const circles = document.querySelectorAll('.pal-circle');
+        circles.forEach(circle => {
+            circle.classList.remove('discovered');
+            circle.innerHTML = ''; // Remove all child elements
+        });
 
         this.testButtonCallback = null;
         this.restartButtonCallback = null;
