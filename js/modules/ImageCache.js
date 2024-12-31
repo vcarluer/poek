@@ -1,106 +1,78 @@
-import fs from 'fs';
-import path from 'path';
-import { createCanvas, loadImage } from 'canvas';
-import { fileURLToPath } from 'url';
+import { Pal } from '../pal.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const CACHE_DIR = path.join(__dirname, '..', '..', 'assets', 'cache');
 const SIZES = {
-    small: 64,    // For UI elements
-    medium: 128,  // For game circles
-    large: 256,   // For evolution display
-    xlarge: 512   // For high-res displays
+    small: 64,    // For evolution display (50px)
+    medium: 128,  // For small game circles
+    large: 256,   // For preview (200px) and medium game circles
+    xlarge: 512   // For large game circles
 };
 
 class ImageCache {
-    static async initialize() {
-        // Ensure cache directory exists
-        if (!fs.existsSync(CACHE_DIR)) {
-            fs.mkdirSync(CACHE_DIR, { recursive: true });
-        }
-    }
-
     static getCachePath(imageName, size) {
-        return path.join(CACHE_DIR, `${imageName}-${size}.png`);
+        return `/assets/cache/${imageName}-${size}.png`;
     }
 
-    static async processImage(sourcePath, targetSize) {
-        const image = await loadImage(sourcePath);
-        
-        // Create canvas with target dimensions
-        const canvas = createCanvas(targetSize, targetSize);
-        const ctx = canvas.getContext('2d');
-        
-        // Enable high-quality image scaling
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        
-        // Clear canvas
-        ctx.clearRect(0, 0, targetSize, targetSize);
-        
-        // Create circular clipping path with anti-aliasing
-        ctx.beginPath();
-        const centerX = targetSize / 2;
-        const centerY = targetSize / 2;
-        const radius = (targetSize / 2) - 1; // Slight reduction to prevent edge artifacts
-        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        ctx.closePath();
-        
-        // Add a subtle shadow for depth
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
-        ctx.shadowBlur = 3;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 1;
-        
-        // Clip and draw
-        ctx.clip();
-        ctx.drawImage(image, 0, 0, targetSize, targetSize);
-        
-        // Add a subtle border
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        
-        return canvas.toBuffer('image/png');
+    static async loadImage(imageName, size) {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = () => resolve(image);
+            image.onerror = (e) => reject(new Error(`Failed to load image ${imageName}-${size}: ${e.message}`));
+            image.src = this.getCachePath(imageName, size);
+        });
     }
 
-    static async cacheImage(sourcePath) {
-        const imageName = path.basename(sourcePath, '.png');
-        
-        // Process and cache each size
-        for (const [sizeName, size] of Object.entries(SIZES)) {
-            const cachePath = this.getCachePath(imageName, sizeName);
-            const buffer = await this.processImage(sourcePath, size);
-            fs.writeFileSync(cachePath, buffer);
+    static getAppropriateGameSize(type) {
+        const radius = Pal.TYPES[type].radius;
+        if (radius <= 64) return 'medium';      // Pour les petits Pals
+        if (radius <= 128) return 'large';      // Pour les Pals moyens
+        return 'xlarge';                        // Pour les grands Pals
+    }
+
+    static async loadImageVariants(imageName, type) {
+        try {
+            const gameSize = this.getAppropriateGameSize(type);
+            const [evolution, preview, game] = await Promise.all([
+                this.loadImage(imageName, 'small'),     // 64px pour evolution (50px)
+                this.loadImage(imageName, 'large'),     // 256px pour preview (200px)
+                this.loadImage(imageName, gameSize)     // Taille adaptée au radius
+            ]);
+
+            return {
+                evolution,  // Petite taille pour l'affichage des évolutions
+                preview,   // Grande taille pour la preview
+                game      // Taille adaptée au radius du Pal
+            };
+        } catch (error) {
+            console.error(`Error loading image variants for ${imageName}:`, error);
+            throw error;
         }
     }
 
-    static async cacheAllImages() {
-        await this.initialize();
-        
-        const assetsDir = path.join(__dirname, '..', '..', 'assets');
-        const files = fs.readdirSync(assetsDir);
-        
-        for (const file of files) {
-            if (file.endsWith('.png') && !file.includes('-')) {
-                const imagePath = path.join(assetsDir, file);
-                await this.cacheImage(imagePath);
-                console.log(`Cached all sizes for ${file}`);
+    static async loadAllImages(onProgress) {
+        const imageVariants = {};
+        const totalTypes = Object.keys(Pal.TYPES).length;
+        let loadedTypes = 0;
+        let errors = [];
+
+        for (const type in Pal.TYPES) {
+            const name = Pal.TYPES[type].name;
+            try {
+                imageVariants[type] = await this.loadImageVariants(name, type);
+                loadedTypes++;
+                onProgress?.(Math.floor((loadedTypes / totalTypes) * 100));
+                console.log(`Loaded cached variants for ${type}`);
+            } catch (error) {
+                console.error(`Error loading cached variants for ${type}:`, error);
+                errors.push({ type, error });
             }
         }
-    }
 
-    static getImagePath(imageName, size = 'medium') {
-        const cachePath = this.getCachePath(imageName, size);
-        if (fs.existsSync(cachePath)) {
-            return cachePath;
+        if (errors.length > 0) {
+            throw new Error(`Failed to load images for types: ${errors.map(e => e.type).join(', ')}`);
         }
-        // Fallback to original if cached version doesn't exist
-        return path.join(__dirname, '..', '..', 'assets', `${imageName}.png`);
+
+        return imageVariants;
     }
 }
 
-// Export both the class and sizes constant
 export { ImageCache, SIZES };

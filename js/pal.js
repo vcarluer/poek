@@ -1,4 +1,4 @@
-import { ImageCache, SIZES } from './modules/ImageCache.js';
+import { ImageCache } from './modules/ImageCache.js';
 
 export class Pal {
     static TYPES = {
@@ -68,46 +68,7 @@ export class Pal {
     static EVOLUTION_SIZE = 50;
 
     static async loadImages(onProgress) {
-        // Initialize the image cache first
-        await ImageCache.initialize();
-        
-        const imageVariants = {};
-        const totalTypes = Object.keys(Pal.TYPES).length;
-        let loadedTypes = 0;
-        
-        for (const type in Pal.TYPES) {
-            const name = Pal.TYPES[type].name;
-            
-            try {
-                // Load all cached variants
-                const preview = new Image();
-                preview.src = ImageCache.getCachePath(name, 'large');
-                
-                const game = new Image();
-                game.src = ImageCache.getCachePath(name, 'medium');
-                
-                const evolution = new Image();
-                evolution.src = ImageCache.getCachePath(name, 'small');
-                
-                // Wait for all images to load
-                await Promise.all([
-                    new Promise(resolve => preview.onload = resolve),
-                    new Promise(resolve => game.onload = resolve),
-                    new Promise(resolve => evolution.onload = resolve)
-                ]);
-                
-                imageVariants[type] = { preview, game, evolution };
-                loadedTypes++;
-                onProgress?.(Math.floor((loadedTypes / totalTypes) * 100));
-                
-                console.log(`Loaded cached variants for ${type}`);
-            } catch (error) {
-                console.error(`Error loading cached variants for ${type}:`, error);
-            }
-        }
-        
-        console.log('All cached image variants loaded successfully');
-        return imageVariants;
+        return ImageCache.loadAllImages(onProgress);
     }
 
     constructor(x, y, type, world, imageVariants) {

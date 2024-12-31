@@ -29,7 +29,7 @@ class Game {
             window.addEventListener('unload', () => this.cleanup());
         } catch (error) {
             console.error('Failed to initialize game:', error);
-            alert('Failed to initialize game. Please refresh the page.');
+            this.uiManager.showError('Failed to initialize game. Please refresh the page.', 10000);
         }
     }
 
@@ -125,14 +125,9 @@ class Game {
 
     async initialize() {
         try {
-            // Initialize image cache first
-            this.updateLoadingProgress(0);
-            console.log('Initializing image cache...');
-            await ImageCache.cacheAllImages();
-            this.updateLoadingProgress(50);
-            console.log('Image cache initialized');
-            
             // Load cached images with progress tracking
+            this.updateLoadingProgress(0);
+            console.log('Loading cached images...');
             const images = await Pal.loadImages(progress => {
                 // Scale progress from 50-100%
                 this.updateLoadingProgress(50 + Math.floor(progress / 2));
@@ -155,7 +150,7 @@ class Game {
             
         } catch (error) {
             console.error('Failed to initialize game:', error);
-            alert('Failed to initialize game. Please refresh the page.');
+            this.uiManager.showError('Failed to initialize game. Please refresh the page.', 10000);
         }
     }
 
@@ -209,7 +204,7 @@ class Game {
             this.gameLoop.start();
         } catch (error) {
             console.error('Failed to restart game:', error);
-            alert('Failed to restart game. Please refresh the page.');
+            this.uiManager.showError('Failed to restart game. Please refresh the page.', 10000);
         }
     }
 

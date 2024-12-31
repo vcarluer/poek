@@ -1,4 +1,4 @@
-import { ImageCache } from './modules/ImageCache.js';
+import { ImageCacheGenerator } from './modules/ImageCacheGenerator.js';
 
 // Process and cache all images at different sizes
-ImageCache.cacheAllImages().catch(console.error);
+ImageCacheGenerator.cacheAllImages().catch(console.error);

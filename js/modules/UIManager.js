@@ -9,6 +9,52 @@ export class UIManager {
             'LIFMUNK', 'FUACK', 'ROOBY', 'ARSOX', 'MAU', 'VERDASH', 'JETRAGON'
         ];
         this.initializeEvolutionList();
+        this.initializeErrorBanner();
+    }
+
+    initializeErrorBanner() {
+        this.errorBanner = document.querySelector('.error-banner');
+        this.errorMessage = document.querySelector('.error-message');
+        this.errorCloseButton = document.querySelector('.error-close');
+
+        if (this.errorCloseButton) {
+            this.errorCloseButton.addEventListener('click', () => this.hideError());
+        }
+    }
+
+    showError(message, autoHideDelay = 5000) {
+        if (!this.errorBanner || !this.errorMessage) return;
+        
+        this.errorMessage.textContent = message;
+        this.errorBanner.style.display = 'flex';
+        
+        // Force a reflow before adding the visible class for the animation
+        void this.errorBanner.offsetWidth;
+        this.errorBanner.classList.add('visible');
+
+        if (this.errorTimeout) {
+            clearTimeout(this.errorTimeout);
+        }
+
+        this.errorTimeout = setTimeout(() => {
+            this.hideError();
+        }, autoHideDelay);
+    }
+
+    hideError() {
+        if (!this.errorBanner) return;
+
+        this.errorBanner.classList.remove('visible');
+        
+        // Wait for the transition to complete before hiding
+        setTimeout(() => {
+            this.errorBanner.style.display = 'none';
+        }, 300);
+
+        if (this.errorTimeout) {
+            clearTimeout(this.errorTimeout);
+            this.errorTimeout = null;
+        }
     }
 
     initializeEvolutionList() {
@@ -201,8 +247,13 @@ export class UIManager {
         if (this.restartButton && this.restartButtonCallback) {
             this.restartButton.removeEventListener('click', this.restartButtonCallback);
         }
+        if (this.errorCloseButton) {
+            this.errorCloseButton.removeEventListener('click', this.hideError);
+        }
 
         this.hideGameOverScreen();
+        this.hideError();
+        
         if (this.scoreElement) {
             this.scoreElement.textContent = '0';
         }
