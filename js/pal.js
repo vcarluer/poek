@@ -88,11 +88,11 @@ export class Pal {
         const density = baseDensity * Math.pow(radius / 10, 2); // Quadratic scaling relative to smallest Pal
         
         this.body = Bodies.circle(x, y, radius, {
-            restitution: 0.3, // Slightly reduced bounciness for more stable stacking
-            friction: 0.4, // Increased friction for better stability
+            restitution: 0.2, // Further reduced bounciness for more stable stacking
+            friction: 0.6, // Increased friction for better stability
             density: density, // Density scales with size
             label: type,
-            slop: 0.05, // Reduce jittering
+            slop: 0, // Eliminated jittering
             // Removed inertia: Infinity to allow rotation
         });
 

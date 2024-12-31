@@ -24,9 +24,9 @@ export class PhysicsEngine {
         this.engine = this.Engine.create();
         this.world = this.engine.world;
         
-        // Adjusted gravity to work well with size-proportional masses
+        // Increased gravity for better stability
         this.world.gravity.x = 0;
-        this.world.gravity.y = 1.5;
+        this.world.gravity.y = 3.0;
 
         // Create walls
         this.createWalls();
