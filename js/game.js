@@ -95,7 +95,14 @@ class Game {
         const isDev = urlParams.get('dev') === 'true';
         
         if (isDev) {
-            this.uiManager.setupTestButton(true, () => {
+            // Show test buttons container
+            const container = document.querySelector('.test-button-container');
+            if (container) {
+                container.style.display = 'flex';
+            }
+
+            // Setup game over test
+            document.getElementById('test-game-over')?.addEventListener('click', () => {
                 this.gameState.setGameOver(true);
                 const screenshot = this.renderer.takeScreenshot();
                 this.uiManager.showGameOverScreen(
@@ -103,6 +110,32 @@ class Game {
                     this.gameState.getHighScore(),
                     screenshot
                 );
+            });
+
+            // Setup Jetragon spin test
+            document.getElementById('test-spin')?.addEventListener('click', () => {
+                this.uiManager.spinJetragon();
+            });
+
+            // Setup spawn buttons for each Pal type
+            Object.keys(Pal.TYPES).forEach(type => {
+                const button = document.getElementById(`spawn-${type.toLowerCase()}`);
+                if (button) {
+                    button.addEventListener('click', () => {
+                        // Create Pal directly in play area
+                        const radius = Pal.TYPES[type].radius;
+                        const pal = new Pal(
+                            this.canvas.width / 2,
+                            this.canvas.height / 2,
+                            type,
+                            this.physics.world,
+                            this.gameState.images
+                        );
+                        pal.hasHadContact = true; // Mark as having had contact since it's in play area
+                        this.physics.setStatic(pal.body, false); // Ensure Pal is not static
+                        this.gameState.addPal(pal);
+                    });
+                }
             });
         }
     }

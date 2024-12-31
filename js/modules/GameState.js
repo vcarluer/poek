@@ -79,8 +79,18 @@ export class GameState {
             const palBottom = pal.body.position.y + radius;
             const palVelocity = Math.abs(pal.body.velocity.y);
             
+            // Debug log for Pal positions and states
+            console.log(`Checking Pal ${pal.type}:`, {
+                y: pal.body.position.y,
+                palTop,
+                selectionZoneHeight,
+                hasHadContact: pal.hasHadContact,
+                isStatic: pal.body.isStatic
+            });
+
             // Check if any non-static Pal is above the selection zone line
             if (!pal.body.isStatic && palTop <= selectionZoneHeight && pal.hasHadContact) {
+                console.log(`Game over triggered by ${pal.type}`);
                 this.gameOver = true;
                 return true;
             }
