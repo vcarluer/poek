@@ -29,17 +29,15 @@ export class PalManager {
             pal.hasHadContact = true;
         }
         
+        // Set collision filter to prevent collisions while in selection zone
+        pal.body.collisionFilter = {
+            group: -1,  // Negative group means it won't collide with anything in the same group
+            category: 0x0002,  // Special category for selection zone Pals
+            mask: 0x0000  // Don't collide with anything while in selection zone
+        };
+        
         // Make it static initially
         this.physics.setStatic(pal.body, true);
-        
-        // If in game over state, set collision filter to prevent interactions
-        if (this.gameState.isGameOver()) {
-            pal.body.collisionFilter = {
-                group: -1,  // Negative group means it won't collide with anything
-                category: 0x0002,  // Custom category
-                mask: 0x0000  // Don't collide with anything
-            };
-        }
         
         this.gameState.addPal(pal);
         this.gameState.setCurrentPal(pal);
@@ -100,6 +98,12 @@ export class PalManager {
         
         // Make the Pal dynamic after UI update
         requestAnimationFrame(() => {
+            // Set normal collision filter for gameplay
+            currentPal.body.collisionFilter = {
+                group: 0,  // Default group
+                category: 0x0001,  // Default category
+                mask: 0x0001  // Collide with default category
+            };
             this.physics.setStatic(currentPal.body, false);
             this.gameState.setCurrentPal(null);
         });
