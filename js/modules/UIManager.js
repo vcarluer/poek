@@ -187,7 +187,10 @@ export class UIManager {
 
     setupRestartButton(callback) {
         this.restartButton = this.gameOverScreen.querySelector('.restart-button');
-        this.restartButtonCallback = callback;
+        this.restartButtonCallback = () => {
+            this.hideGameOverScreen();
+            callback();
+        };
         this.restartButton.addEventListener('click', this.restartButtonCallback);
     }
 

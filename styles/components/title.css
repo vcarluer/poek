@@ -113,6 +113,27 @@
     }
 }
 
+/* In-game title */
+.game-title.in-game {
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%) skew(-5deg);
+    -ms-transform: translateX(-50%) skew(-5deg);
+    font-size: 32px;
+    z-index: 1000;
+    letter-spacing: 2px;
+    text-shadow: 
+        3px 3px 0 #000,
+        -3px -3px 0 #000,
+        3px -3px 0 #000,
+        -3px 3px 0 #000,
+        0 0 20px rgba(255, 78, 80, 1),
+        0 0 40px rgba(255, 78, 80, 0.7);
+    animation: glow 2s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
 /* Game over title variant */
 .game-over .game-title {
     font-size: 32px;
