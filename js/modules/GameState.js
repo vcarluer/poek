@@ -10,6 +10,7 @@ export class GameState {
         this.safetyMargin = 100; // Pixels of extra clearance needed before next drop
         this.recentMerges = []; // Track recent merges timestamps
         this.isJetragonSpinning = false; // Track if JetRagon spin animation is active
+        this.gameOverTimeout = null; // Timeout for delayed game over
         
         // Make instance globally available for UI components
         window.gameInstance = {
@@ -31,6 +32,10 @@ export class GameState {
         this.images = null;
         this.recentMerges = []; // Reset merge tracking
         this.isJetragonSpinning = false; // Reset Jetragon animation state
+        if (this.gameOverTimeout) {
+            clearTimeout(this.gameOverTimeout);
+            this.gameOverTimeout = null;
+        }
     }
 
     setImages(imageVariants) {
@@ -90,9 +95,29 @@ export class GameState {
 
             // Check if any non-static Pal is above the selection zone line
             if (!pal.body.isStatic && palTop <= selectionZoneHeight && pal.hasHadContact) {
-                console.log(`Game over triggered by ${pal.type}`);
-                this.gameOver = true;
-                return true;
+                console.log(`Game over countdown started by ${pal.type}`);
+                if (!this.gameOverTimeout) {
+                    console.log(`Game over countdown started by ${pal.type}`);
+                    this.gameOverTimeout = setTimeout(() => {
+                        // Re-check the pal's position
+                        if (this.pals.has(pal) && pal.body && !pal.body.isStatic) {
+                            const currentPalTop = pal.body.position.y - this.getPalRadius(pal.type);
+                            if (currentPalTop <= selectionZoneHeight) {
+                                console.log(`Game over triggered by ${pal.type}`);
+                                this.gameOver = true;
+                                // Take a screenshot and show game over screen
+                                const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
+                                this.uiManager.showGameOverScreen(
+                                    this.getScore(),
+                                    this.getHighScore(),
+                                    screenshot
+                                );
+                            }
+                        }
+                        this.gameOverTimeout = null;
+                    }, 3000);
+                }
+                return false; // Don't return game over until timeout completes
             }
         }
         
@@ -101,7 +126,14 @@ export class GameState {
             .filter(p => p.type === 'JETRAGON' && !p.isProcessing)
             .length;
         if (jetragonCount > 4) {
+            console.log('Game over triggered by too many Jetragons');
             this.gameOver = true;
+            const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
+            this.uiManager.showGameOverScreen(
+                this.getScore(),
+                this.getHighScore(),
+                screenshot
+            );
             return true;
         }
 

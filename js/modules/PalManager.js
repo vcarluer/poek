@@ -23,6 +23,12 @@ export class PalManager {
             this.gameState.images
         );
         
+        // If the Pal is created below the selection zone (e.g. through dev tools),
+        // mark it as having had contact
+        if (pal.body.position.y > this.gameState.selectionZoneHeight) {
+            pal.hasHadContact = true;
+        }
+        
         // Make it static initially
         this.physics.setStatic(pal.body, true);
         
@@ -42,6 +48,33 @@ export class PalManager {
         const minX = radius + 10;
         const maxX = this.canvas.width - radius - 10;
         const constrainedX = Math.max(minX, Math.min(maxX, x));
+
+        // Check if there's already a pal at this position
+        const existingPals = Array.from(this.gameState.getPals());
+        for (const pal of existingPals) {
+            if (pal === currentPal || !pal.body) continue;
+            
+            // Only check pals that are near the top
+            if (pal.body.position.y > this.gameState.selectionZoneHeight + 100) continue;
+            
+            const palRadius = this.gameState.getPalRadius(pal.type);
+            const distance = Math.abs(pal.body.position.x - constrainedX);
+            const minDistance = (radius + palRadius) * 0.8; // Allow some overlap
+            
+            console.log('Drop position check:', {
+                existingPal: pal.type,
+                distance,
+                minDistance,
+                x1: pal.body.position.x,
+                x2: constrainedX
+            });
+            
+            // Only prevent if there's significant overlap
+            if (distance < minDistance) {
+                console.log('Drop prevented: too close to existing pal');
+                return;
+            }
+        }
         
         // Update position first
         this.physics.setPosition(currentPal.body, {

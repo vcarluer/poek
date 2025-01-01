@@ -37,9 +37,6 @@ export class GameLoop {
         // Request next frame first to ensure smooth animation
         this.animationFrameId = requestAnimationFrame(this.boundLoop);
 
-        // Don't update if game is over
-        if (this.gameState.isGameOver()) return;
-
         // Calculate time delta
         if (this.lastTime === 0) {
             this.lastTime = currentTime;
@@ -63,15 +60,10 @@ export class GameLoop {
             this.accumulator -= this.fixedTimeStep;
         }
 
-        // Check for game over after all physics updates
+        // Check for game over condition
         if (this.gameState.checkGameOver(this.gameState.selectionZoneHeight)) {
-            const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
-            this.gameState.uiManager.showGameOverScreen(
-                this.gameState.getScore(),
-                this.gameState.getHighScore(),
-                screenshot
-            );
-            return; // Exit immediately when game over is detected
+            this.stop(); // Stop the game loop when game over is confirmed
+            return;
         }
 
         // Calculate interpolation alpha
