@@ -110,16 +110,6 @@ class Game {
         });
 
         if (isDev) {
-            // Setup game over test
-            document.getElementById('test-game-over')?.addEventListener('click', () => {
-                this.gameState.setGameOver(true);
-                const screenshot = this.renderer.takeScreenshot();
-                this.uiManager.showGameOverScreen(
-                    this.gameState.getScore(),
-                    this.gameState.getHighScore(),
-                    screenshot
-                );
-            });
 
             // Setup Jetragon spin test
             document.getElementById('test-spin')?.addEventListener('click', () => {
@@ -267,11 +257,12 @@ class Game {
                 this.uiManager.updateEvolutionList(this.gameState.getDiscoveredPals(), Pal.TYPES);
             }
 
-            // Show title screen, hide game container
+            // Keep game container visible and start new game immediately
             const titleContainer = document.querySelector('.title-container');
             const gameContainer = document.querySelector('.game-container');
-            if (titleContainer) titleContainer.style.display = 'flex';
-            if (gameContainer) gameContainer.style.display = 'none';
+            if (titleContainer) titleContainer.style.display = 'none';
+            if (gameContainer) gameContainer.style.display = 'block';
+            this.gameState.setGameStarted(true);
 
             // Start the game loop
             this.gameLoop.start();
