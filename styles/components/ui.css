@@ -6,14 +6,25 @@
     z-index: 1001;
     pointer-events: all;
     gap: 10px;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.test-button-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    margin-bottom: 10px;
 }
 
 .test-button {
     background: #FF4E50;
     color: white;
     border: none;
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 6px 8px;
+    font-size: 12px;
     border-radius: 5px;
     cursor: pointer;
     font-family: 'Rubik', sans-serif;
@@ -22,6 +33,7 @@
     font-weight: bold;
     box-shadow: 0 2px 0 #c0392b;
     pointer-events: all;
+    white-space: nowrap;
 }
 
 .test-button:hover {
