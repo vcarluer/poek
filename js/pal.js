@@ -80,6 +80,8 @@ export class Pal {
         
         this.type = type;
         this.isGlowing = false;
+        this.isBlinking = false;
+        this.blinkStartTime = 0;
         this.hasHadContact = false; // Track if Pal has had contact with another Pal
         const { radius } = Pal.TYPES[type];
         
@@ -125,7 +127,16 @@ export class Pal {
             ctx.shadowBlur = 4;
             ctx.beginPath();
             ctx.arc(0, 0, radius, 0, Math.PI * 2);
-            ctx.fillStyle = this.type === 'JETRAGON' ? '#FFD700' : Pal.TYPES[this.type].color;
+            
+            // Handle blinking state
+            if (this.isBlinking) {
+                const blinkDuration = 200; // Duration of each blink in ms
+                const timeSinceStart = Date.now() - this.blinkStartTime;
+                const shouldShowRed = Math.floor(timeSinceStart / blinkDuration) % 2 === 0;
+                ctx.fillStyle = shouldShowRed ? '#FF0000' : (this.type === 'JETRAGON' ? '#FFD700' : Pal.TYPES[this.type].color);
+            } else {
+                ctx.fillStyle = this.type === 'JETRAGON' ? '#FFD700' : Pal.TYPES[this.type].color;
+            }
             ctx.fill();
 
             // Add glow effect if active
@@ -185,5 +196,21 @@ export class Pal {
         }
         const { World } = window.Matter;
         World.remove(world, this.body);
+    }
+
+    isAboveLine(lineY) {
+        const radius = Pal.TYPES[this.type].radius;
+        return this.body.position.y - radius <= lineY;
+    }
+
+    startBlinking() {
+        if (!this.isBlinking) {
+            this.isBlinking = true;
+            this.blinkStartTime = Date.now();
+        }
+    }
+
+    stopBlinking() {
+        this.isBlinking = false;
     }
 }

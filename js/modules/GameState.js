@@ -68,23 +68,19 @@ export class GameState {
             
             const radius = this.getPalRadius(pal.type);
             const palTop = pal.body.position.y - radius;
-            const palBottom = pal.body.position.y + radius;
-            const palVelocity = Math.abs(pal.body.velocity.y);
             
-            // Debug log for Pal positions and states
-            console.log(`Checking Pal ${pal.type}:`, {
-                y: pal.body.position.y,
-                palTop,
-                selectionZoneHeight,
-                hasHadContact: pal.hasHadContact,
-                isStatic: pal.body.isStatic
-            });
-
             // Check if any non-static Pal is above the selection zone line
             if (!pal.body.isStatic && palTop <= selectionZoneHeight && pal.hasHadContact) {
-                console.log(`Game over countdown started by ${pal.type}`);
                 if (!this.gameOverTimeout) {
                     console.log(`Game over countdown started by ${pal.type}`);
+                    
+                    // Start blinking for Pals above the line that have had contact
+                    for (const p of this.pals) {
+                        if (p !== this.currentPal && p.hasHadContact && p.isAboveLine(selectionZoneHeight)) {
+                            p.startBlinking();
+                        }
+                    }
+                    
                     this.gameOverTimeout = setTimeout(() => {
                         // Re-check the pal's position
                         if (this.pals.has(pal) && pal.body && !pal.body.isStatic) {
@@ -93,13 +89,18 @@ export class GameState {
                                 console.log(`Game over triggered by ${pal.type}`);
                                 this.gameOver = true;
                                 
+                                // Stop all blinking
+                                for (const p of this.pals) {
+                                    p.stopBlinking();
+                                }
+                                
                                 // Set collision filter for all existing Pals to prevent interactions
                                 for (const existingPal of this.pals) {
                                     if (existingPal.body) {
                                         existingPal.body.collisionFilter = {
-                                            group: -1,  // Negative group means it won't collide with anything
-                                            category: 0x0002,  // Custom category
-                                            mask: 0x0000  // Don't collide with anything
+                                            group: -1,
+                                            category: 0x0002,
+                                            mask: 0x0000
                                         };
                                     }
                                 }
@@ -120,8 +121,26 @@ export class GameState {
                         }
                         this.gameOverTimeout = null;
                     }, 3000);
+                } else {
+                    // During countdown, update blinking state for Pals that have had contact
+                    for (const p of this.pals) {
+                        if (p !== this.currentPal && p.hasHadContact) {
+                            if (p.isAboveLine(selectionZoneHeight)) {
+                                if (!p.isBlinking) p.startBlinking();
+                            } else {
+                                if (p.isBlinking) p.stopBlinking();
+                            }
+                        }
+                    }
                 }
                 return false; // Don't return game over until timeout completes
+            }
+        }
+        
+        // If we get here and there's no game over countdown, make sure no Pals are blinking
+        if (!this.gameOverTimeout) {
+            for (const p of this.pals) {
+                if (p.isBlinking) p.stopBlinking();
             }
         }
         
