@@ -98,11 +98,16 @@ class Game {
         const urlParams = new URLSearchParams(window.location.search);
         const isDev = urlParams.get('dev') === 'true';
         
-        // Always ensure container is hidden by default
-        const container = document.querySelector('.test-button-container');
-        if (container) {
-            container.style.display = isDev ? 'flex' : 'none';
-        }
+        // Setup test buttons through UIManager
+        this.uiManager.setupTestButton(isDev, () => {
+            this.gameState.setGameOver(true);
+            const screenshot = this.renderer.takeScreenshot();
+            this.uiManager.showGameOverScreen(
+                this.gameState.getScore(),
+                this.gameState.getHighScore(),
+                screenshot
+            );
+        });
 
         if (isDev) {
             // Setup game over test
