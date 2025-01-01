@@ -153,7 +153,7 @@ export class CollisionManager {
                 this.uiManager.updateEvolutionList(
                     this.gameState.getDiscoveredPals(),
                     Pal.TYPES,
-                    palA.type // Pass the merged Pal type to trigger rotation animation
+                    palA.type // Pass the type that was just merged to trigger rotation animation
                 );
 
                 // Check for rapid merges or new Pal discovery

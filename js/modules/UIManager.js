@@ -98,7 +98,7 @@ export class UIManager {
             const isDiscovered = discoveredPals.has(type);
             const wasDiscovered = circle.classList.contains('discovered');
             const isNewlyDiscovered = isDiscovered && !wasDiscovered;
-            const isSameAsMerged = type === mergedType && wasDiscovered;
+            const isSameAsMerged = type === mergedType;
 
             // Set color as CSS custom property
             circle.style.setProperty('--pal-color', palData.color);
@@ -122,6 +122,8 @@ export class UIManager {
                 if (isNewlyDiscovered) {
                     img.classList.add('bounce-in');
                 } else if (isSameAsMerged) {
+                    img.classList.remove('rotate-once');
+                    void img.offsetWidth; // Force reflow
                     img.classList.add('rotate-once');
                 }
             } else {
