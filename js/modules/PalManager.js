@@ -56,29 +56,33 @@ export class PalManager {
         const maxX = this.canvas.width - radius - 10;
         const constrainedX = Math.max(minX, Math.min(maxX, x));
 
-        // Check if there's already a pal at this position
+        // Check for collisions with pals in the launch area
         const existingPals = Array.from(this.gameState.getPals());
         for (const pal of existingPals) {
             if (pal === currentPal || !pal.body) continue;
             
-            // Only check pals that are near the top
+            // Only check pals in the launch area
             if (pal.body.position.y > this.gameState.selectionZoneHeight + 100) continue;
             
             const palRadius = this.gameState.getPalRadius(pal.type);
-            const distance = Math.abs(pal.body.position.x - constrainedX);
-            const minDistance = (radius + palRadius) * 0.8; // Allow some overlap
+            const dx = pal.body.position.x - constrainedX;
+            const dy = pal.body.position.y - currentPal.body.position.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const minDistance = radius + palRadius;
             
             console.log('Drop position check:', {
                 existingPal: pal.type,
                 distance,
                 minDistance,
                 x1: pal.body.position.x,
-                x2: constrainedX
+                x2: constrainedX,
+                y1: pal.body.position.y,
+                y2: currentPal.body.position.y
             });
             
-            // Only prevent if there's significant overlap
+            // Prevent drop if there's a collision with any Pal in the launch area
             if (distance < minDistance) {
-                console.log('Drop prevented: too close to existing pal');
+                console.log('Drop prevented: collision with pal in launch area');
                 return;
             }
         }
