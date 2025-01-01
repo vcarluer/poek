@@ -105,6 +105,20 @@ export class GameState {
                             if (currentPalTop <= selectionZoneHeight) {
                                 console.log(`Game over triggered by ${pal.type}`);
                                 this.gameOver = true;
+                                
+                                // Modify the Pal's collision properties
+                                if (pal.body) {
+                                    // Set collision filter to prevent interactions
+                                    pal.body.collisionFilter = {
+                                        group: -1,  // Negative group means it won't collide with anything
+                                        category: 0x0002,  // Custom category
+                                        mask: 0x0000  // Don't collide with anything
+                                    };
+                                    
+                                    // Make it static to prevent physics updates
+                                    pal.body.isStatic = true;
+                                }
+                                
                                 // Take a screenshot and show game over screen
                                 const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
                                 this.uiManager.showGameOverScreen(
