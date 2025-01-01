@@ -4,7 +4,7 @@ import { SIZES } from './ImageSizes.js';
 
 class ImageCache {
     static getCachePath(imageName, size) {
-        return `/assets/cache/${imageName}-${size}.png`;
+        return `assets/cache/${imageName}-${size}.png`;
     }
 
     static async loadImage(imageName, size) {
