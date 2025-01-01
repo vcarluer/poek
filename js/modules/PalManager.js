@@ -9,7 +9,7 @@ export class PalManager {
     }
 
     createNewPal() {
-        if (this.gameState.isGameOver() || this.gameState.getCurrentPal()) return;
+        if (this.gameState.getCurrentPal()) return;
 
         const type = this.gameState.getNextType();
         const radius = this.gameState.getPalRadius(type);
@@ -31,6 +31,15 @@ export class PalManager {
         
         // Make it static initially
         this.physics.setStatic(pal.body, true);
+        
+        // If in game over state, set collision filter to prevent interactions
+        if (this.gameState.isGameOver()) {
+            pal.body.collisionFilter = {
+                group: -1,  // Negative group means it won't collide with anything
+                category: 0x0002,  // Custom category
+                mask: 0x0000  // Don't collide with anything
+            };
+        }
         
         this.gameState.addPal(pal);
         this.gameState.setCurrentPal(pal);

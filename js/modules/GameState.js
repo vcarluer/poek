@@ -106,16 +106,19 @@ export class GameState {
                                 console.log(`Game over triggered by ${pal.type}`);
                                 this.gameOver = true;
                                 
-                                // Modify the Pal's collision properties
+                                // Set collision filter for all existing Pals to prevent interactions
+                                for (const existingPal of this.pals) {
+                                    if (existingPal.body) {
+                                        existingPal.body.collisionFilter = {
+                                            group: -1,  // Negative group means it won't collide with anything
+                                            category: 0x0002,  // Custom category
+                                            mask: 0x0000  // Don't collide with anything
+                                        };
+                                    }
+                                }
+                                
+                                // Make the triggering Pal static
                                 if (pal.body) {
-                                    // Set collision filter to prevent interactions
-                                    pal.body.collisionFilter = {
-                                        group: -1,  // Negative group means it won't collide with anything
-                                        category: 0x0002,  // Custom category
-                                        mask: 0x0000  // Don't collide with anything
-                                    };
-                                    
-                                    // Make it static to prevent physics updates
                                     pal.body.isStatic = true;
                                 }
                                 

@@ -88,13 +88,20 @@ export class Pal {
         const baseDensity = 0.001;
         const density = baseDensity * Math.pow(radius / 10, 2); // Quadratic scaling relative to smallest Pal
         
+        // Default collision filter for normal gameplay
+        const defaultCollisionFilter = {
+            category: 0x0001,  // Default category
+            mask: 0x0001,     // Collide with default category
+            group: 0          // Default group (0 means use category/mask)
+        };
+
         this.body = Bodies.circle(x, y, radius, {
             restitution: 0.2, // Further reduced bounciness for more stable stacking
             friction: 0.6, // Increased friction for better stability
             density: density, // Density scales with size
             label: type,
             slop: 0, // Eliminated jittering
-            // Removed inertia: Infinity to allow rotation
+            collisionFilter: defaultCollisionFilter
         });
 
         // Add the body to the world
