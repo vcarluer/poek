@@ -83,6 +83,11 @@ export class PalManager {
             // Prevent drop if there's a collision with any Pal in the launch area
             if (distance < minDistance) {
                 console.log('Drop prevented: collision with pal in launch area');
+                // Only reset position when drop is prevented
+                this.physics.setPosition(currentPal.body, {
+                    x: this.canvas.width / 2,
+                    y: this.gameState.selectionZoneHeight - radius
+                });
                 return;
             }
         }

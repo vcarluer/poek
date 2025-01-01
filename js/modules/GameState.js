@@ -52,21 +52,8 @@ export class GameState {
     }
 
     canCreateNewPal() {
-        if (!this.lastDroppedPal) return true;
-        
-        const palType = this.lastDroppedPal.type;
-        const radius = this.getPalRadius(palType);
-        const palTop = this.lastDroppedPal.body.position.y - radius;
-        
-        // Check if the last dropped Pal has moved below the selection zone
-        const hasClearedZone = palTop > this.selectionZoneHeight;
-        
-        // Clear the lastDroppedPal reference once it's safely below
-        if (hasClearedZone) {
-            this.lastDroppedPal = null;
-        }
-        
-        return hasClearedZone;
+        // Always allow new Pal creation
+        return true;
     }
 
     checkGameOver(selectionZoneHeight) {
@@ -138,22 +125,6 @@ export class GameState {
             }
         }
         
-        // Check for too many Jetragons
-        const jetragonCount = Array.from(this.pals)
-            .filter(p => p.type === 'JETRAGON' && !p.isProcessing)
-            .length;
-        if (jetragonCount > 4) {
-            console.log('Game over triggered by too many Jetragons');
-            this.gameOver = true;
-            const screenshot = document.getElementById('game-canvas').toDataURL('image/png');
-            this.uiManager.showGameOverScreen(
-                this.getScore(),
-                this.getHighScore(),
-                screenshot
-            );
-            return true;
-        }
-
         return false;
     }
 
