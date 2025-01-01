@@ -12,7 +12,7 @@ export class InputHandler {
     setupEventListeners() {
         // Mouse/touch start handler
         const startHandler = (e) => {
-            if (this.callbacks.isGameOver()) return;
+            if (this.callbacks.isGameOver() || !this.callbacks.isGameStarted()) return;
             
             e.preventDefault();
             e.stopPropagation();
@@ -32,7 +32,7 @@ export class InputHandler {
 
         // Mouse/touch move handler
         const moveHandler = (e) => {
-            if (this.callbacks.isGameOver() || !this.callbacks.getCurrentPal()) return;
+            if (this.callbacks.isGameOver() || !this.callbacks.isGameStarted() || !this.callbacks.getCurrentPal()) return;
             
             if (e) {
                 e.preventDefault();
@@ -54,7 +54,7 @@ export class InputHandler {
 
         // Release handler
         const releaseHandler = (e) => {
-            if (this.callbacks.isGameOver()) return;
+            if (this.callbacks.isGameOver() || !this.callbacks.isGameStarted()) return;
             if (e) {
                 e.preventDefault();
                 e.stopPropagation();

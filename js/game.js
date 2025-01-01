@@ -64,6 +64,7 @@ class Game {
         // Input handling
         this.inputHandler = new InputHandler(this.canvas, {
             isGameOver: () => this.gameState.isGameOver(),
+            isGameStarted: () => this.gameState.isGameStarted(),
             getCurrentPal: () => this.gameState.getCurrentPal(),
             getLastDropTime: () => this.gameState.getLastDropTime(),
             getMinDropDelay: () => this.gameState.getMinDropDelay(),
@@ -165,10 +166,25 @@ class Game {
         }
     }
 
+    setupStartButton() {
+        const startButton = document.querySelector('.start-button');
+        const titleContainer = document.querySelector('.title-container');
+        const gameContainer = document.querySelector('.game-container');
+
+        if (startButton) {
+            startButton.addEventListener('click', () => {
+                if (titleContainer) titleContainer.style.display = 'none';
+                if (gameContainer) gameContainer.style.display = 'block';
+                this.gameState.setGameStarted(true);
+            });
+        }
+    }
+
     async initialize() {
         try {
             // Load cached images with progress tracking
             this.updateLoadingProgress(0);
+            this.setupStartButton();
             console.log('Loading cached images...');
             const images = await Pal.loadImages(progress => {
                 // Scale progress from 50-100%
@@ -245,6 +261,12 @@ class Game {
                 this.uiManager.updateNextPal(this.gameState.getNextType(), images);
                 this.uiManager.updateEvolutionList(this.gameState.getDiscoveredPals(), Pal.TYPES);
             }
+
+            // Show title screen, hide game container
+            const titleContainer = document.querySelector('.title-container');
+            const gameContainer = document.querySelector('.game-container');
+            if (titleContainer) titleContainer.style.display = 'flex';
+            if (gameContainer) gameContainer.style.display = 'none';
 
             // Start the game loop
             this.gameLoop.start();

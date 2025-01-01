@@ -21,6 +21,7 @@ export class GameState {
     reset() {
         this.score = 0;
         this.gameOver = false;
+        this.gameStarted = false;
         this.currentPal = null;
         this.lastDroppedPal = null;
         this.lastDropTime = 0;
@@ -170,6 +171,7 @@ export class GameState {
     getScore() { return this.score; }
     getHighScore() { return this.highScore; }
     getCurrentPal() { return this.currentPal; }
+    isGameStarted() { return this.gameStarted; }
     getLastDroppedPal() { return this.lastDroppedPal; }
     getLastDropTime() { return this.lastDropTime; }
     getDropTimeout() { return this.dropTimeout; }
@@ -203,6 +205,7 @@ export class GameState {
     removePal(pal) { this.pals.delete(pal); }
     setSmokeEffects(effects) { this.smokeEffects = effects; }
     setGameOver(value) { this.gameOver = value; }
+    setGameStarted(value) { this.gameStarted = value; }
 
     // Track merges for rapid merge detection
     trackMerge() {
