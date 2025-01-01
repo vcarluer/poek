@@ -1,37 +1,116 @@
 .title-container {
-    min-height: 60px;
-    display: -ms-flexbox;
+    min-height: 100vh;
     display: flex;
-    -ms-flex-align: center;
+    flex-direction: column;
     align-items: center;
-    -ms-flex-pack: center;
     justify-content: center;
     width: 100%;
     position: fixed;
-    top: 5px;
+    top: 0;
     left: 0;
     right: 0;
     z-index: 10;
+    background: radial-gradient(circle at center, rgba(0,0,0,0.7), rgba(0,0,0,0.95));
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.ga-logo {
+    width: 100px;
+    height: auto;
+    margin-bottom: 2rem;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+    transition: transform 0.3s ease;
+}
+
+.ga-logo:hover {
+    transform: scale(1.1);
+}
+
+.start-button {
+    margin-top: 2rem;
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+    font-family: 'Rubik', sans-serif;
+    color: white;
+    background: linear-gradient(45deg, #FF4E50, #F9D423);
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 15px rgba(255, 78, 80, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.start-button::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+    transform: rotate(45deg);
+    transition: transform 0.5s ease;
+    pointer-events: none;
+}
+
+.start-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 78, 80, 0.5);
+}
+
+.start-button:hover::before {
+    transform: rotate(45deg) translate(50%, 50%);
+}
+
+.start-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 10px rgba(255, 78, 80, 0.3);
 }
 
 .game-title {
     font-family: 'Rubik', sans-serif;
     color: #FF4E50;
-    font-size: clamp(28px, 7vw, 36px);
+    font-size: clamp(40px, 10vw, 72px);
     text-align: center;
     margin: 0;
     position: relative;
     z-index: 2;
     text-shadow: 
-        3px 3px 0 #000,
-        -3px -3px 0 #000,
-        3px -3px 0 #000,
-        -3px 3px 0 #000,
-        0 0 10px rgba(255, 78, 80, 0.8),
-        0 0 20px rgba(255, 78, 80, 0.5);
-    letter-spacing: 2px;
+        4px 4px 0 #000,
+        -4px -4px 0 #000,
+        4px -4px 0 #000,
+        -4px 4px 0 #000,
+        0 0 20px rgba(255, 78, 80, 0.8),
+        0 0 40px rgba(255, 78, 80, 0.5);
+    letter-spacing: 4px;
     transform: skew(-5deg);
-    -ms-transform: skew(-5deg);
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 
+            4px 4px 0 #000,
+            -4px -4px 0 #000,
+            4px -4px 0 #000,
+            -4px 4px 0 #000,
+            0 0 20px rgba(255, 78, 80, 0.8),
+            0 0 40px rgba(255, 78, 80, 0.5);
+    }
+    to {
+        text-shadow: 
+            4px 4px 0 #000,
+            -4px -4px 0 #000,
+            4px -4px 0 #000,
+            -4px 4px 0 #000,
+            0 0 30px rgba(255, 78, 80, 0.9),
+            0 0 50px rgba(255, 78, 80, 0.6);
+    }
 }
 
 /* Game over title variant */
