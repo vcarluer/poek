@@ -129,14 +129,10 @@ export class Pal {
             ctx.arc(0, 0, radius, 0, Math.PI * 2);
             
             // Handle blinking state
-            if (this.isBlinking) {
-                const blinkDuration = 200; // Duration of each blink in ms
-                const timeSinceStart = Date.now() - this.blinkStartTime;
-                const shouldShowRed = Math.floor(timeSinceStart / blinkDuration) % 2 === 0;
-                ctx.fillStyle = shouldShowRed ? '#FF0000' : (this.type === 'JETRAGON' ? '#FFD700' : Pal.TYPES[this.type].color);
-            } else {
-                ctx.fillStyle = this.type === 'JETRAGON' ? '#FFD700' : Pal.TYPES[this.type].color;
-            }
+            const isRedPhase = this.isBlinking && (Math.floor((Date.now() - this.blinkStartTime) / 500) % 2 === 0);
+            
+            // Draw background circle
+            ctx.fillStyle = isRedPhase ? '#FF0000' : (this.type === 'JETRAGON' ? '#FFD700' : Pal.TYPES[this.type].color);
             ctx.fill();
 
             // Add glow effect if active
@@ -169,8 +165,16 @@ export class Pal {
                     const y = -radius;
                     const size = radius * 2;
                     
-                    // Draw the image with explicit dimensions to ensure proper rendering
-                    ctx.drawImage(this.imageVariants.game, x, y, size, size);
+                    // Draw the image with a red tint during blinking
+                    if (isRedPhase) {
+                        // Draw red-tinted image
+                        ctx.globalCompositeOperation = 'multiply';
+                        ctx.drawImage(this.imageVariants.game, x, y, size, size);
+                        ctx.globalCompositeOperation = 'source-over';
+                    } else {
+                        // Draw normal image
+                        ctx.drawImage(this.imageVariants.game, x, y, size, size);
+                    }
                 } catch (err) {
                     console.error('Error drawing Pal image:', err);
                 }
