@@ -2,18 +2,18 @@ import { ImageCache } from './modules/ImageCache.js';
 
 export class Pal {
     static TYPES = {
-        LAMBALL: { radius: 10, score: 2, next: 'CHIKIPI', name: 'lamball', color: '#F8E8E8' },
-        CHIKIPI: { radius: 15, score: 4, next: 'FOXPARKS', name: 'chikipi', color: '#FFE5B4' },
-        FOXPARKS: { radius: 21, score: 8, next: 'PENGULLET', name: 'foxparks', color: '#FF7F50' },
-        PENGULLET: { radius: 31, score: 16, next: 'CATTIVA', name: 'pengullet', color: '#87CEEB' },
-        CATTIVA: { radius: 45, score: 32, next: 'LIFMUNK', name: 'cattiva', color: '#DDA0DD' },
-        LIFMUNK: { radius: 65, score: 64, next: 'FUACK', name: 'lifmunk', color: '#90EE90' },
-        FUACK: { radius: 94, score: 128, next: 'ROOBY', name: 'fuack', color: '#4682B4' },
-        ROOBY: { radius: 136, score: 256, next: 'ARSOX', name: 'rooby', color: '#CD5C5C' },
-        ARSOX: { radius: 197, score: 512, next: 'MAU', name: 'arsox', color: '#FF4500' },
-        MAU: { radius: 286, score: 768, next: 'VERDASH', name: 'mau', color: '#9370DB' },
-        VERDASH: { radius: 340, score: 896, next: 'JETRAGON', name: 'verdash', color: '#32CD32' },
-        JETRAGON: { radius: 393, score: 1024, next: null, name: 'jetragon', color: '#4169E1' }
+        LAMBALL: { radius: 20, score: 2, next: 'CHIKIPI', name: 'lamball', color: '#F8E8E8' },
+        CHIKIPI: { radius: 25, score: 4, next: 'FOXPARKS', name: 'chikipi', color: '#FFE5B4' },
+        FOXPARKS: { radius: 32, score: 8, next: 'PENGULLET', name: 'foxparks', color: '#FF7F50' },
+        PENGULLET: { radius: 40, score: 16, next: 'CATTIVA', name: 'pengullet', color: '#87CEEB' },
+        CATTIVA: { radius: 48, score: 32, next: 'LIFMUNK', name: 'cattiva', color: '#DDA0DD' },
+        LIFMUNK: { radius: 56, score: 64, next: 'FUACK', name: 'lifmunk', color: '#90EE90' },
+        FUACK: { radius: 64, score: 128, next: 'ROOBY', name: 'fuack', color: '#4682B4' },
+        ROOBY: { radius: 72, score: 256, next: 'ARSOX', name: 'rooby', color: '#CD5C5C' },
+        ARSOX: { radius: 80, score: 512, next: 'MAU', name: 'arsox', color: '#FF4500' },
+        MAU: { radius: 88, score: 768, next: 'VERDASH', name: 'mau', color: '#9370DB' },
+        VERDASH: { radius: 96, score: 896, next: 'JETRAGON', name: 'verdash', color: '#32CD32' },
+        JETRAGON: { radius: 104, score: 1024, next: null, name: 'jetragon', color: '#4169E1' }
     };
 
     static calculateProbabilities() {
