@@ -148,16 +148,33 @@ class Game {
     updateLoadingProgress(progress) {
         const loadingBar = document.querySelector('.loading-bar');
         const loadingProgress = document.querySelector('.loading-progress');
+        const loadingText = document.querySelector('.loading-text');
+        
         if (loadingBar && loadingProgress) {
             loadingBar.style.width = `${progress}%`;
             loadingProgress.textContent = `${progress}%`;
+        }
+        
+        if (loadingText) {
+            if (progress < 50) {
+                loadingText.textContent = 'Loading Pal Images...';
+            } else {
+                loadingText.textContent = 'Preparing Game...';
+            }
         }
     }
 
     hideLoadingScreen() {
         const loadingScreen = document.querySelector('.loading-screen');
+        const startButton = document.querySelector('.start-button');
+        
         if (loadingScreen) {
             loadingScreen.classList.add('hidden');
+        }
+        
+        if (startButton) {
+            startButton.disabled = false;
+            startButton.textContent = 'Start Game';
         }
     }
 
@@ -167,6 +184,10 @@ class Game {
         const gameContainer = document.querySelector('.game-container');
 
         if (startButton) {
+            // Disable button initially
+            startButton.disabled = true;
+            startButton.textContent = 'Loading...';
+            
             startButton.addEventListener('click', () => {
                 if (titleContainer) titleContainer.style.display = 'none';
                 if (gameContainer) gameContainer.style.display = 'block';
