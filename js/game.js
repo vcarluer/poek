@@ -19,6 +19,9 @@ async function waitForMatter() {
 
 class Game {
     constructor() {
+        this.lastSpawnTime = 0; // Move to class level
+        this.spawnCooldown = 500; // Move cooldown constant to class level
+        
         try {
             this.initializeCanvas();
             this.initializeModules();
@@ -94,13 +97,13 @@ class Game {
         const urlParams = new URLSearchParams(window.location.search);
         const isDev = urlParams.get('dev') === 'true';
         
-        if (isDev) {
-            // Show test buttons container
-            const container = document.querySelector('.test-button-container');
-            if (container) {
-                container.style.display = 'flex';
-            }
+        // Always ensure container is hidden by default
+        const container = document.querySelector('.test-button-container');
+        if (container) {
+            container.style.display = isDev ? 'flex' : 'none';
+        }
 
+        if (isDev) {
             // Setup game over test
             document.getElementById('test-game-over')?.addEventListener('click', () => {
                 this.gameState.setGameOver(true);
@@ -122,6 +125,12 @@ class Game {
                 const button = document.getElementById(`spawn-${type.toLowerCase()}`);
                 if (button) {
                     button.addEventListener('click', () => {
+                        const now = Date.now();
+                        if (now - this.lastSpawnTime < this.spawnCooldown) {
+                            return; // Skip if cooldown hasn't elapsed
+                        }
+                        this.lastSpawnTime = now;
+
                         // Create Pal directly in play area
                         const radius = Pal.TYPES[type].radius;
                         const pal = new Pal(
@@ -208,6 +217,9 @@ class Game {
                 this.uiManager.hideGameOverScreen();
                 this.uiManager.cleanup();
             }
+
+            // Reset spawn cooldown
+            this.lastSpawnTime = 0;
 
             // Clear all references
             this.gameLoop = null;

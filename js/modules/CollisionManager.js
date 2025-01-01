@@ -11,12 +11,22 @@ export class CollisionManager {
 
     setupCollisionHandler() {
         this.physicsEngine.onCollision((event) => {
-            if (this.gameState.isGameOver()) return;
-
             event.pairs.forEach(pair => {
                 const { bodyA, bodyB } = pair;
                 
-                // If either body is a wall, skip further processing but mark Pal as having contact
+                // During game over, only allow wall collisions
+                if (this.gameState.isGameOver()) {
+                    // Only process if one of the bodies is a wall
+                    if (this.physicsEngine.getWalls().some(wall => wall === bodyA || wall === bodyB)) {
+                        const pal = Array.from(this.gameState.getPals()).find(p => p.body === bodyA || p.body === bodyB);
+                        if (pal && !pal.body.isStatic) {
+                            pal.hasHadContact = true;
+                        }
+                    }
+                    return;
+                }
+
+                // Normal gameplay collision handling
                 if (this.physicsEngine.getWalls().some(wall => wall === bodyA || wall === bodyB)) {
                     const pal = Array.from(this.gameState.getPals()).find(p => p.body === bodyA || p.body === bodyB);
                     if (pal && !pal.body.isStatic) {
