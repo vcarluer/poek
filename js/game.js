@@ -207,8 +207,8 @@ class Game {
                 this.updateLoadingProgress(50 + Math.floor(progress / 2));
             });
             console.log('Pal images loaded:', Object.keys(images));
-            
             // Hide loading screen
+            
             this.hideLoadingScreen();
             
             // Set images and initial next type
